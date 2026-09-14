@@ -1,0 +1,1334 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+<meta name="color-scheme" content="dark light" />
+<title>PaperShelf</title>
+<style>:root{
+  color-scheme:dark;
+  --bg:#0b0e13;--bg2:#10151d;--surface:#141a23;--surface2:#1a222e;--surface3:#202a38;
+  --border:#263242;--border2:#344357;--text:#edf2f7;--muted:#97a5b8;--dim:#68778c;
+  --accent:#7ba7ff;--accent2:#a58cff;--good:#67d5b2;--warn:#e8bd67;--danger:#ef7d88;
+  --shadow:0 18px 56px rgba(0,0,0,.28);--radius:15px;--radius-sm:10px;
+  --sans:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,"Noto Sans",sans-serif;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,Georgia,"Noto Serif",serif;
+  --reader-size:17px;--reader-width:920px;
+}
+html[data-theme="light"]{
+  color-scheme:light;
+  --bg:#f3f6fa;--bg2:#edf2f7;--surface:#ffffff;--surface2:#f8fafc;--surface3:#eef3f8;
+  --border:#dce4ee;--border2:#c8d3e1;--text:#182235;--muted:#65758a;--dim:#8a98aa;
+  --accent:#4f73dd;--accent2:#7c5fe1;--good:#1e8d6b;--warn:#9f741f;--danger:#bd4f5d;
+  --shadow:0 18px 50px rgba(44,63,92,.11);
+}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--bg);color:var(--text);font-family:var(--sans)}body{overflow-x:hidden}
+button,input,select,textarea{font:inherit}button{cursor:pointer}a{color:inherit}.hidden{display:none!important}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 12% 0%,color-mix(in srgb,var(--accent) 8%,transparent),transparent 36%),radial-gradient(circle at 90% 4%,color-mix(in srgb,var(--accent2) 6%,transparent),transparent 34%);z-index:-1}
+.app{min-height:100vh;display:grid;grid-template-columns:244px minmax(0,1fr)}
+.sidebar{height:100vh;position:sticky;top:0;padding:16px 13px;display:flex;flex-direction:column;border-right:1px solid var(--border);background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(18px);z-index:40}
+.brand{display:flex;align-items:center;gap:10px;padding:2px 6px 15px}.brand-mark{width:39px;height:39px;border-radius:12px;background:linear-gradient(145deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff;font-weight:900;box-shadow:0 10px 26px color-mix(in srgb,var(--accent) 28%,transparent)}.brand-copy strong{display:block;font-size:14px}.brand-copy span{display:block;color:var(--dim);font-size:9px;margin-top:2px;letter-spacing:.02em}
+.nav{display:grid;gap:4px}.nav button{width:100%;display:flex;align-items:center;gap:10px;padding:9px 10px;border:0;border-radius:9px;background:transparent;color:var(--muted);text-align:left;font-weight:680;font-size:12px}.nav button:hover{background:var(--surface2);color:var(--text)}.nav button.active{background:color-mix(in srgb,var(--accent) 11%,var(--surface));color:var(--text);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--accent) 27%,var(--border))}.nav .icon{width:18px;text-align:center}.nav-count{margin-left:auto;font-size:9px;color:var(--dim)}
+.sidebar-spacer{flex:1}.sidebar-card{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:10px 11px;color:var(--muted);font-size:10px;line-height:1.5}.sidebar-card strong{color:var(--text);display:block;margin-bottom:2px}.sidebar-mini{display:flex;gap:6px;margin-top:8px}.sidebar-mini .btn{flex:1}
+.main{min-width:0}.topbar{height:66px;position:sticky;top:0;z-index:35;display:flex;align-items:center;gap:9px;padding:11px 20px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--bg) 86%,transparent);backdrop-filter:blur(18px)}
+.mobile-brand{display:none}.search{position:relative;flex:1;max-width:820px}.search:before{content:"⌕";position:absolute;left:13px;top:7px;color:var(--dim);font-size:19px}.search input{width:100%;border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:11px;padding:10px 13px 10px 38px;font-size:12px;outline:none}.search input:focus{border-color:color-mix(in srgb,var(--accent) 70%,var(--border));box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 12%,transparent)}
+.btn{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:9px;padding:8px 11px;font-size:11px;font-weight:760;white-space:nowrap}.btn:hover{background:var(--surface2);border-color:var(--border2)}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.btn.primary:hover{filter:brightness(1.04)}.btn.ghost{background:transparent}.btn.danger{color:var(--danger);border-color:color-mix(in srgb,var(--danger) 35%,var(--border))}.btn.warn{color:var(--warn)}.btn.sm{padding:6px 8px;font-size:10px}.btn.icon{width:36px;height:36px;padding:0;display:grid;place-items:center}.btn:disabled{opacity:.45;cursor:not-allowed}
+.content{padding:22px 26px 72px;max-width:1760px;margin:0 auto}.page-head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:14px}.eyebrow{font-size:9px;text-transform:uppercase;letter-spacing:.17em;color:var(--accent);font-weight:850;margin-bottom:5px}.page-head h1{margin:0;font-size:25px;line-height:1.2}.page-head p{margin:6px 0 0;color:var(--muted);font-size:11px;line-height:1.55}.head-actions{display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.toolbar{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-bottom:12px}.spacer{flex:1}.input,.select,.textarea{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:9px;padding:8px 9px;font-size:11px;outline:none}.input:focus,.select:focus,.textarea:focus{border-color:var(--accent)}.textarea{resize:vertical}.seg{display:flex;gap:3px;padding:3px;border:1px solid var(--border);background:var(--surface);border-radius:9px}.seg button{border:0;background:transparent;color:var(--muted);padding:5px 8px;border-radius:6px;font-size:10px;font-weight:720}.seg button.active{background:var(--surface3);color:var(--text)}
+.summary{display:flex;gap:9px;align-items:center;flex-wrap:wrap;padding:7px 0 12px;color:var(--muted);font-size:10px}.summary strong{color:var(--text)}
+.paper-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(335px,1fr));gap:10px}.paper-list{display:flex;flex-direction:column;gap:7px}.paper-card{position:relative;border:1px solid var(--border);background:linear-gradient(180deg,color-mix(in srgb,var(--surface) 97%,var(--accent) 3%),var(--surface));border-radius:14px;padding:14px;transition:transform .15s,border-color .15s,box-shadow .15s}.paper-card:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--accent) 30%,var(--border));box-shadow:var(--shadow)}.paper-grid .paper-card{display:grid;grid-template-columns:52px minmax(0,1fr);gap:11px;align-items:start}.paper-grid .paper-card>.card-actions{grid-column:1/-1}.paper-list .paper-card{display:grid;grid-template-columns:58px minmax(0,1fr) auto;gap:12px;align-items:start;padding:12px}.score{width:48px;height:48px;border-radius:12px;background:color-mix(in srgb,var(--accent) 11%,var(--surface2));border:1px solid color-mix(in srgb,var(--accent) 28%,var(--border));display:grid;place-items:center;font-size:16px;font-weight:900}.score small{display:block;font-size:7px;color:var(--dim);margin-top:-8px;letter-spacing:.06em}.score.none{color:var(--dim)}
+.card-badges{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-bottom:7px}.badge{display:inline-flex;align-items:center;gap:4px;border:1px solid var(--border);background:var(--surface2);color:var(--muted);border-radius:999px;padding:3px 6px;font-size:8px;font-weight:820}.badge.must{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 38%,var(--border))}.badge.gem{color:var(--good);border-color:color-mix(in srgb,var(--good) 36%,var(--border))}.badge.accent{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 38%,var(--border))}.priority-stars{color:var(--warn);font-size:10px;letter-spacing:.03em}
+.paper-title{font-size:16px;line-height:1.35;font-weight:830;margin:0 0 4px}.paper-title-zh{font-size:12px;line-height:1.45;color:var(--muted);margin:0 0 7px}.paper-meta{font-size:9px;color:var(--dim);line-height:1.55;margin-bottom:8px}.paper-reason{font-size:11px;color:var(--muted);line-height:1.62;margin:0 0 9px}.tags{display:flex;gap:4px;flex-wrap:wrap}.tag{border:1px solid var(--border);background:var(--bg2);border-radius:6px;padding:3px 6px;color:var(--muted);font-size:8px}.card-actions{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin-top:10px}.card-actions .btn{padding:6px 8px}.star{color:var(--warn)}
+.empty{border:1px dashed var(--border2);border-radius:15px;padding:52px 18px;text-align:center;color:var(--muted);background:color-mix(in srgb,var(--surface) 77%,transparent)}.empty strong{display:block;color:var(--text);font-size:16px;margin-bottom:5px}.empty p{font-size:11px;line-height:1.6;margin:0 auto 12px;max-width:590px}
+.panel{border:1px solid var(--border);background:var(--surface);border-radius:13px;overflow:hidden}.panel-head{padding:11px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px}.panel-head strong{font-size:11px}.panel-body{padding:13px}.settings-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.setting-card{border:1px solid var(--border);background:var(--surface);border-radius:13px;padding:13px}.setting-card h3{font-size:12px;margin:0 0 8px}.setting-card p{font-size:10px;line-height:1.55;color:var(--muted);margin:6px 0 0}.collections-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}.collection-card{border:1px solid var(--border);background:var(--surface);border-radius:12px;padding:13px}.collection-card strong{display:block;font-size:13px}.collection-card span{color:var(--dim);font-size:10px}.collection-card .card-actions{margin-top:9px}
+.modal-backdrop{position:fixed;inset:0;z-index:120;background:rgba(4,7,11,.70);backdrop-filter:blur(5px);display:grid;place-items:center;padding:18px}.modal{width:min(920px,96vw);max-height:92vh;display:flex;flex-direction:column;border:1px solid var(--border);background:var(--surface);border-radius:15px;box-shadow:0 28px 90px rgba(0,0,0,.50);overflow:hidden}.modal-head{display:flex;align-items:center;gap:10px;padding:13px 15px;border-bottom:1px solid var(--border)}.modal-head strong{font-size:13px}.modal-body{padding:15px;overflow:auto}.modal-foot{display:flex;align-items:center;gap:8px;justify-content:flex-end;padding:11px 15px;border-top:1px solid var(--border)}.import-box{min-height:220px;width:100%;line-height:1.5;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}.import-hint{display:flex;gap:6px;align-items:center;color:var(--dim);font-size:9px;margin:7px 0}.import-summary{display:flex;gap:5px;align-items:center;flex-wrap:wrap;margin:10px 0}.import-preview{border:1px solid var(--border);border-radius:10px;overflow:hidden}.preview-row{display:grid;grid-template-columns:74px minmax(0,1fr) minmax(130px,.55fr);gap:9px;align-items:center;padding:9px 10px;border-bottom:1px solid var(--border);font-size:10px}.preview-row:last-child{border-bottom:0}.preview-row strong{font-size:11px}.status-new{color:var(--good);font-weight:800}.status-merge{color:var(--warn);font-weight:800}.status-dup{color:var(--dim);font-weight:800}
+.detail-grid{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(280px,.7fr);gap:12px}.detail-main,.detail-side{display:grid;gap:10px}.field label{display:block;font-size:9px;color:var(--dim);font-weight:800;margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em}.field .textarea{min-height:88px}.source-list{display:grid;gap:6px}.source-row{display:grid;grid-template-columns:115px minmax(0,1fr) auto;gap:7px;align-items:center;padding:7px 8px;border:1px solid var(--border);border-radius:8px;background:var(--surface2);font-size:9px}.source-row .url{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--dim)}.small{font-size:9px;color:var(--dim)}
+.reader{position:fixed;inset:0;z-index:110;background:var(--bg);display:flex;flex-direction:column}.reader-head{height:58px;flex:0 0 58px;display:flex;align-items:center;gap:8px;padding:9px 12px;border-bottom:1px solid var(--border);background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(16px)}.reader-title{min-width:0;flex:1}.reader-title strong{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.reader-title span{display:block;font-size:8px;color:var(--dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.reader-body{min-height:0;flex:1;display:grid;grid-template-columns:minmax(0,1fr) 330px}.reader-body.no-aside{grid-template-columns:1fr}.reader-main{min-width:0;min-height:0;overflow:auto}.reader-aside{min-height:0;overflow:auto;border-left:1px solid var(--border);background:var(--surface);padding:13px}.reader-aside h3{font-size:11px;margin:0 0 8px}.reader-aside .textarea{min-height:170px}.reader-card{max-width:var(--reader-width);margin:0 auto;padding:36px 30px 80px}.reader-card h1{font-family:var(--serif);font-size:34px;line-height:1.2;margin:0 0 9px}.reader-card .zh-title{font-size:16px;color:var(--muted);margin-bottom:12px}.reader-card .meta{font-size:10px;color:var(--dim);line-height:1.6;margin-bottom:22px}.reader-section{border-top:1px solid var(--border);padding-top:20px;margin-top:20px}.reader-section h2{font-size:13px;margin:0 0 8px}.reader-section p{font-size:var(--reader-size);font-family:var(--serif);line-height:1.78;margin:0;color:var(--text)}.reader-reason{border-left:3px solid var(--accent);padding:2px 0 2px 14px}.web-article{font-size:var(--reader-size);line-height:1.72;font-family:var(--serif);max-width:var(--reader-width);margin:0 auto;padding:28px 30px 80px}.web-article img,.web-article svg{max-width:100%;height:auto}.web-article table{max-width:100%;display:block;overflow:auto}.web-article pre{overflow:auto}.web-article a{color:var(--accent)}.reader-fallback{max-width:760px;margin:70px auto;padding:18px;border:1px solid var(--border);background:var(--surface);border-radius:14px;text-align:center}.reader-fallback strong{display:block;margin-bottom:5px}.reader-fallback p{font-size:10px;color:var(--muted);line-height:1.55}.reader-embed{width:100%;height:100%;border:0;background:#fff}.reader-loading{display:grid;place-items:center;min-height:60vh;color:var(--muted);font-size:11px}
+.toast{position:fixed;left:50%;bottom:24px;z-index:200;transform:translate(-50%,12px);opacity:0;pointer-events:none;background:var(--surface3);border:1px solid var(--border2);color:var(--text);border-radius:10px;padding:9px 13px;font-size:11px;box-shadow:var(--shadow);transition:.18s}.toast.show{opacity:1;transform:translate(-50%,0)}
+.mobile-nav{display:none}.mobile-more{display:none}
+@media(max-width:1080px){.app{grid-template-columns:208px minmax(0,1fr)}.sidebar{padding-left:10px;padding-right:10px}.paper-grid{grid-template-columns:repeat(auto-fill,minmax(300px,1fr))}.reader-body{grid-template-columns:minmax(0,1fr) 300px}}
+@media(max-width:860px){body{padding-bottom:66px}.app{display:block}.sidebar{display:none}.topbar{height:60px;padding:9px 10px}.mobile-brand{display:flex;align-items:center;gap:7px;min-width:0}.mobile-brand .brand-mark{width:32px;height:32px;border-radius:10px;font-size:12px}.mobile-brand strong{font-size:11px}.search{max-width:none}.desktop-only{display:none!important}.content{padding:18px 12px 82px}.page-head{align-items:flex-start}.page-head h1{font-size:22px}.paper-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.paper-list .paper-card{grid-template-columns:52px minmax(0,1fr)}.paper-list .paper-card>.list-side{grid-column:1/-1}.settings-grid{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr}.reader-body{display:block}.reader-aside{position:fixed;right:0;top:58px;bottom:0;width:min(88vw,350px);z-index:114;box-shadow:-18px 0 50px rgba(0,0,0,.35)}.reader-aside.hidden-mobile{display:none}.reader-card{padding:28px 22px 80px}.reader-card h1{font-size:29px}.mobile-nav{display:grid;grid-template-columns:repeat(6,1fr);position:fixed;left:0;right:0;bottom:0;height:62px;z-index:90;border-top:1px solid var(--border);background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(18px);padding-bottom:env(safe-area-inset-bottom)}.mobile-nav button{border:0;background:transparent;color:var(--dim);font-size:9px;font-weight:720;padding:7px 2px 5px}.mobile-nav button span{display:block;font-size:18px;line-height:18px;margin-bottom:3px}.mobile-nav button.active{color:var(--accent)}.mobile-more{position:fixed;inset:0;z-index:100;background:rgba(0,0,0,.45);display:flex;align-items:flex-end}.mobile-more-card{width:100%;background:var(--surface);border-radius:18px 18px 0 0;border:1px solid var(--border);padding:10px 12px calc(18px + env(safe-area-inset-bottom));box-shadow:0 -18px 60px rgba(0,0,0,.35)}.mobile-more-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.mobile-more-grid button{border:1px solid var(--border);background:var(--surface2);color:var(--text);border-radius:11px;padding:13px 7px;font-size:10px}.mobile-more-grid button span{display:block;font-size:19px;margin-bottom:4px}}
+@media(max-width:620px){.topbar .search{order:3;flex-basis:100%}.topbar{height:auto;flex-wrap:wrap}.content{padding-top:14px}.paper-grid{grid-template-columns:1fr}.paper-grid .paper-card{grid-template-columns:48px minmax(0,1fr)}.score{width:44px;height:44px}.page-head{display:block}.head-actions{justify-content:flex-start;margin-top:10px}.preview-row{grid-template-columns:64px minmax(0,1fr)}.preview-row>:last-child{grid-column:2}.modal-backdrop{padding:0;align-items:end}.modal{width:100vw;max-height:94vh;border-radius:18px 18px 0 0}.reader-head{height:auto;min-height:58px;flex-wrap:wrap}.reader-title{order:1;flex-basis:calc(100% - 52px)}.reader-head>.reader-actions{order:2;width:100%;display:flex;gap:6px;overflow:auto;padding-bottom:2px}.reader-card{padding:24px 16px 78px}.reader-card h1{font-size:25px}.web-article{padding:20px 15px 76px}.reader-aside{top:94px;width:100vw}.source-row{grid-template-columns:88px minmax(0,1fr)}}
+@media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important;transition:none!important;animation:none!important}.paper-card:hover{transform:none}}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="brand-mark">P</div><div class="brand-copy"><strong>PaperShelf</strong><span data-i18n="appTagline"></span></div></div>
+    <nav class="nav" id="nav"></nav>
+    <div class="sidebar-spacer"></div>
+    <div class="sidebar-card">
+      <strong data-i18n="singleFile"></strong>
+      <span data-i18n="backupReminder"></span>
+      <div class="sidebar-mini"><button class="btn sm" id="side-theme">◐</button><button class="btn sm" id="side-lang">中 / EN</button></div>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="topbar">
+      <div class="mobile-brand"><div class="brand-mark">P</div><strong>PaperShelf</strong></div>
+      <div class="search"><input id="global-search" autocomplete="off" /></div>
+      <button class="btn primary" id="add-papers">＋ <span data-i18n="addPapers"></span></button>
+      <button class="btn icon desktop-only" id="theme-btn" title="Theme">◐</button>
+      <button class="btn desktop-only" id="lang-btn">中 / EN</button>
+    </header>
+    <section class="content" id="content"></section>
+  </main>
+</div>
+<nav class="mobile-nav" id="mobile-nav"></nav>
+<div id="mobile-more-root"></div>
+<div id="modal-root"></div>
+<div id="reader-root"></div>
+<input type="file" id="backup-file" accept="application/json,.json" class="hidden" />
+<div class="toast" id="toast"></div>
+<script>var PaperShelfCore;
+(function (PaperShelfCore) {
+    function uid(prefix = 'paper') {
+        return `${prefix}_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 9)}`;
+    }
+    PaperShelfCore.uid = uid;
+    function nowIso() {
+        return new Date().toISOString();
+    }
+    PaperShelfCore.nowIso = nowIso;
+    function normalizeArxiv(raw) {
+        let s = String(raw || '').trim();
+        s = s.replace(/^arxiv:/i, '');
+        s = s.replace(/^https?:\/\/(?:www\.)?arxiv\.org\/(?:abs|html|pdf)\//i, '');
+        s = s.replace(/\.pdf(?:\?.*)?$/i, '');
+        s = s.replace(/[?#].*$/, '');
+        s = s.replace(/v\d+$/i, '');
+        return s.trim();
+    }
+    PaperShelfCore.normalizeArxiv = normalizeArxiv;
+    function normalizeDoi(raw) {
+        let s = String(raw || '').trim();
+        s = s.replace(/^doi\s*:\s*/i, '');
+        s = s.replace(/^https?:\/\/(?:dx\.)?doi\.org\//i, '');
+        s = s.replace(/[?#].*$/, '');
+        return s.toLowerCase().trim();
+    }
+    PaperShelfCore.normalizeDoi = normalizeDoi;
+    function normalizeOpenReview(raw) {
+        const s = String(raw || '').trim();
+        const m = s.match(/[?&]id=([^&#]+)/i);
+        return decodeURIComponent(m ? m[1] : s.replace(/^openreview:/i, '').trim());
+    }
+    PaperShelfCore.normalizeOpenReview = normalizeOpenReview;
+    function normalizeTitle(raw) {
+        return String(raw || '')
+            .normalize('NFKC')
+            .toLowerCase()
+            .replace(/https?:\/\/\S+/g, '')
+            .replace(/[“”‘’"'`]/g, '')
+            .replace(/[^\p{L}\p{N}]+/gu, ' ')
+            .replace(/\s+/g, ' ')
+            .trim();
+    }
+    PaperShelfCore.normalizeTitle = normalizeTitle;
+    function parseIdentifiers(input) {
+        const text = String(input || '').trim();
+        const identifiers = {};
+        const sources = [];
+        let url = '';
+        let readerUrl = '';
+        const addSource = (type, label, sourceUrl) => {
+            if (!sourceUrl)
+                return;
+            if (!sources.some(s => s.url === sourceUrl))
+                sources.push({ type, label, url: sourceUrl });
+            if (!url)
+                url = sourceUrl;
+        };
+        const urlMatches = text.match(/https?:\/\/[^\s)\]}>,|]+/gi) || [];
+        const candidates = urlMatches.length ? urlMatches : [text];
+        for (const raw of candidates) {
+            const clean = raw.replace(/[.,;:]+$/, '');
+            let m;
+            if ((m = clean.match(/https?:\/\/(?:www\.)?arxiv\.org\/(?:abs|html|pdf)\/([^?#\s]+)/i))) {
+                const id = normalizeArxiv(m[1]);
+                if (id) {
+                    identifiers.arxiv = identifiers.arxiv || id;
+                    const canonical = `https://arxiv.org/abs/${id}`;
+                    addSource('arxiv', 'arXiv', canonical);
+                    readerUrl = readerUrl || `https://arxiv.org/html/${id}`;
+                }
+                continue;
+            }
+            if ((m = clean.match(/https?:\/\/huggingface\.co\/papers\/([^/?#\s]+)/i))) {
+                const id = normalizeArxiv(m[1]);
+                if (id)
+                    identifiers.arxiv = identifiers.arxiv || id;
+                addSource('huggingface', 'Hugging Face Papers', clean);
+                if (id)
+                    readerUrl = readerUrl || `https://arxiv.org/html/${id}`;
+                continue;
+            }
+            if ((m = clean.match(/https?:\/\/(?:www\.)?openreview\.net\/(?:forum|pdf)\?[^#]*\bid=([^&#]+)/i))) {
+                const id = decodeURIComponent(m[1]);
+                identifiers.openreview = identifiers.openreview || id;
+                addSource('openreview', 'OpenReview', `https://openreview.net/forum?id=${encodeURIComponent(id)}`);
+                readerUrl = readerUrl || `https://openreview.net/forum?id=${encodeURIComponent(id)}`;
+                continue;
+            }
+            if ((m = clean.match(/https?:\/\/(?:www\.)?semanticscholar\.org\/paper\/[^/]+\/([a-f0-9]{20,64})/i))) {
+                identifiers.s2 = identifiers.s2 || m[1];
+                addSource('semantic-scholar', 'Semantic Scholar', clean);
+                continue;
+            }
+            if ((m = clean.match(/https?:\/\/(?:dx\.)?doi\.org\/(10\.\d{4,9}\/[^\s?#]+)/i))) {
+                identifiers.doi = identifiers.doi || normalizeDoi(m[1]);
+                addSource('doi', 'DOI', `https://doi.org/${identifiers.doi}`);
+                continue;
+            }
+            if (/^https?:\/\//i.test(clean)) {
+                addSource('web', safeHost(clean), clean);
+            }
+        }
+        if (!identifiers.arxiv) {
+            const m = text.match(/(?:arxiv\s*:\s*)?((?:\d{4}\.\d{4,5})(?:v\d+)?)/i);
+            if (m) {
+                identifiers.arxiv = normalizeArxiv(m[1]);
+                const canonical = `https://arxiv.org/abs/${identifiers.arxiv}`;
+                addSource('arxiv', 'arXiv', canonical);
+                readerUrl = readerUrl || `https://arxiv.org/html/${identifiers.arxiv}`;
+            }
+        }
+        if (!identifiers.doi) {
+            const m = text.match(/\b(10\.\d{4,9}\/[-._;()/:A-Z0-9]+)\b/i);
+            if (m) {
+                identifiers.doi = normalizeDoi(m[1]);
+                addSource('doi', 'DOI', `https://doi.org/${identifiers.doi}`);
+            }
+        }
+        return { identifiers, sources, url: url || undefined, readerUrl: readerUrl || undefined };
+    }
+    PaperShelfCore.parseIdentifiers = parseIdentifiers;
+    function safeHost(url) {
+        try {
+            return new URL(url).hostname.replace(/^www\./, '');
+        }
+        catch {
+            return 'Source';
+        }
+    }
+    function canonicalKey(ids, title = '', authors = []) {
+        if (ids.arxiv)
+            return `arxiv:${normalizeArxiv(ids.arxiv)}`;
+        if (ids.doi)
+            return `doi:${normalizeDoi(ids.doi)}`;
+        if (ids.openreview)
+            return `openreview:${normalizeOpenReview(ids.openreview)}`;
+        if (ids.s2)
+            return `s2:${ids.s2.toLowerCase()}`;
+        const nt = normalizeTitle(title);
+        const a = (authors[0] || '').toLowerCase().replace(/[^a-z0-9\p{L}]+/gu, ' ').trim();
+        return nt ? `title:${nt}${a ? `|${a}` : ''}` : `unknown:${uid('ref')}`;
+    }
+    PaperShelfCore.canonicalKey = canonicalKey;
+    function mergeSources(a = [], b = []) {
+        const map = new Map();
+        for (const item of [...a, ...b]) {
+            if (!item?.url)
+                continue;
+            const key = item.url.replace(/\/$/, '');
+            if (!map.has(key))
+                map.set(key, item);
+        }
+        return [...map.values()];
+    }
+    PaperShelfCore.mergeSources = mergeSources;
+    function samePaper(a, b) {
+        const ai = a.identifiers || {};
+        const bi = b.identifiers || {};
+        if (ai.arxiv && bi.arxiv && normalizeArxiv(ai.arxiv) === normalizeArxiv(bi.arxiv))
+            return true;
+        if (ai.doi && bi.doi && normalizeDoi(ai.doi) === normalizeDoi(bi.doi))
+            return true;
+        if (ai.openreview && bi.openreview && normalizeOpenReview(ai.openreview) === normalizeOpenReview(bi.openreview))
+            return true;
+        if (ai.s2 && bi.s2 && ai.s2.toLowerCase() === bi.s2.toLowerCase())
+            return true;
+        const at = normalizeTitle(a.title);
+        const bt = normalizeTitle(b.title);
+        if (!at || !bt || at !== bt)
+            return false;
+        if (!a.authors?.length || !b.authors?.length)
+            return true;
+        const left = new Set(a.authors.map(x => normalizeTitle(x)));
+        return b.authors.some(x => left.has(normalizeTitle(x)));
+    }
+    PaperShelfCore.samePaper = samePaper;
+    function mergePaper(existing, incoming) {
+        const choose = (oldVal, newVal) => {
+            if (newVal === undefined || newVal === null || newVal === '')
+                return oldVal;
+            if (Array.isArray(newVal) && !newVal.length)
+                return oldVal;
+            return newVal;
+        };
+        const ids = { ...existing.identifiers, ...incoming.identifiers };
+        const merged = {
+            ...existing,
+            title: choose(existing.title, incoming.title),
+            titleZh: choose(existing.titleZh, incoming.titleZh),
+            authors: incoming.authors?.length ? incoming.authors : existing.authors,
+            abstract: choose(existing.abstract, incoming.abstract),
+            abstractZh: choose(existing.abstractZh, incoming.abstractZh),
+            publishedAt: choose(existing.publishedAt, incoming.publishedAt),
+            year: choose(existing.year, incoming.year),
+            venue: choose(existing.venue, incoming.venue),
+            sourceUrl: existing.sourceUrl || incoming.sourceUrl,
+            readerUrl: existing.readerUrl || incoming.readerUrl,
+            sources: mergeSources(existing.sources, incoming.sources),
+            identifiers: ids,
+            canonicalKey: canonicalKey(ids, incoming.title || existing.title, incoming.authors?.length ? incoming.authors : existing.authors),
+            gptScore: Math.max(existing.gptScore || 0, incoming.gptScore || 0),
+            gptReason: incoming.gptReason || existing.gptReason,
+            tags: unique([...(existing.tags || []), ...(incoming.tags || [])]),
+            priority: Math.max(existing.priority || 0, incoming.priority || 0),
+            starred: existing.starred || incoming.starred,
+            bucket: existing.bucket === 'trash' && incoming.bucket !== 'trash' ? incoming.bucket : existing.bucket,
+            readStatus: existing.readStatus !== 'unread' ? existing.readStatus : incoming.readStatus,
+            takeaway: existing.takeaway || incoming.takeaway,
+            whySaved: existing.whySaved || incoming.whySaved,
+            notes: existing.notes || incoming.notes,
+            collections: unique([...(existing.collections || []), ...(incoming.collections || [])]),
+            addedAt: existing.addedAt || incoming.addedAt,
+            updatedAt: nowIso(),
+            lastOpenedAt: existing.lastOpenedAt || incoming.lastOpenedAt,
+            readProgress: Math.max(existing.readProgress || 0, incoming.readProgress || 0),
+            citationCount: Math.max(existing.citationCount || 0, incoming.citationCount || 0),
+            enrichmentStatus: incoming.enrichmentStatus || existing.enrichmentStatus || 'idle',
+            id: existing.id
+        };
+        return merged;
+    }
+    PaperShelfCore.mergePaper = mergePaper;
+    function unique(items) {
+        return [...new Set(items.filter(Boolean))];
+    }
+    PaperShelfCore.unique = unique;
+    function parseAuthors(v) {
+        if (!v)
+            return [];
+        if (Array.isArray(v))
+            return v.map(x => String(x).trim()).filter(Boolean);
+        return String(v).split(/[,;，；]|\band\b/gi).map(x => x.trim()).filter(Boolean);
+    }
+    function parseTags(v) {
+        if (!v)
+            return [];
+        if (Array.isArray(v))
+            return unique(v.map(x => String(x).trim()).filter(Boolean));
+        return unique(String(v).split(/[,;，；|/]/).map(x => x.trim()).filter(Boolean));
+    }
+    function paperFromCandidate(c) {
+        const input = [c.url, c.sourceUrl, ...(c.urls || []), c.arxiv ? `arXiv:${c.arxiv}` : '', c.doi ? `doi:${c.doi}` : '', c.openreview ? `openreview:${c.openreview}` : '', c.s2 || ''].filter(Boolean).join('\n');
+        const parsed = parseIdentifiers(input);
+        const ids = {
+            ...parsed.identifiers,
+            ...(c.arxiv ? { arxiv: normalizeArxiv(c.arxiv) } : {}),
+            ...(c.doi ? { doi: normalizeDoi(c.doi) } : {}),
+            ...(c.openreview ? { openreview: normalizeOpenReview(c.openreview) } : {}),
+            ...(c.s2 ? { s2: c.s2 } : {})
+        };
+        const authors = parseAuthors(c.authors);
+        const title = String(c.title || '').trim();
+        const sourceUrl = c.sourceUrl || c.url || parsed.url || '';
+        const readerUrl = c.readerUrl || parsed.readerUrl || deriveReaderUrl(ids, sourceUrl);
+        const sources = mergeSources(parsed.sources, sourceUrl ? [{ type: 'web', label: safeHost(sourceUrl), url: sourceUrl }] : []);
+        const now = nowIso();
+        return {
+            id: uid(),
+            canonicalKey: canonicalKey(ids, title, authors),
+            identifiers: ids,
+            title,
+            titleZh: String(c.titleZh || '').trim(),
+            authors,
+            abstract: String(c.abstract || '').trim(),
+            abstractZh: String(c.abstractZh || '').trim(),
+            publishedAt: String(c.publishedAt || '').trim(),
+            year: String(c.year || '').trim(),
+            venue: String(c.venue || '').trim(),
+            sourceUrl,
+            readerUrl,
+            sources,
+            gptScore: clampScore(Number(c.aiScore ?? c.score ?? 0)),
+            gptReason: String(c.gptReason || c.reason || '').trim(),
+            tags: parseTags(c.tags),
+            priority: Math.max(0, Math.min(5, Number(c.priority || 0))),
+            starred: !!c.starred,
+            bucket: c.bucket || 'inbox',
+            readStatus: c.readStatus || 'unread',
+            takeaway: String(c.takeaway || '').trim(),
+            whySaved: String(c.whySaved || '').trim(),
+            notes: String(c.notes || '').trim(),
+            collections: c.collections || [],
+            addedAt: now,
+            updatedAt: now,
+            lastOpenedAt: '',
+            readProgress: 0,
+            enrichmentStatus: 'idle'
+        };
+    }
+    PaperShelfCore.paperFromCandidate = paperFromCandidate;
+    function deriveReaderUrl(ids, sourceUrl = '') {
+        if (ids.arxiv)
+            return `https://arxiv.org/html/${normalizeArxiv(ids.arxiv)}`;
+        if (ids.openreview)
+            return `https://openreview.net/forum?id=${encodeURIComponent(ids.openreview)}`;
+        return sourceUrl || '';
+    }
+    PaperShelfCore.deriveReaderUrl = deriveReaderUrl;
+    function clampScore(n) {
+        if (!Number.isFinite(n))
+            return 0;
+        return Math.max(0, Math.min(100, Math.round(n)));
+    }
+    function cleanCell(s) {
+        return s.trim().replace(/^\*\*(.*?)\*\*$/, '$1').replace(/^`(.*?)`$/, '$1');
+    }
+    function columnIndex(headers, names) {
+        const lowered = headers.map(x => normalizeTitle(x));
+        return lowered.findIndex(h => names.some(n => h === normalizeTitle(n) || h.includes(normalizeTitle(n))));
+    }
+    function parseMarkdownTable(text) {
+        const lines = text.split(/\r?\n/).filter(l => /^\s*\|.*\|\s*$/.test(l));
+        if (lines.length < 2)
+            return [];
+        const rows = lines.map(l => l.trim().replace(/^\||\|$/g, '').split('|').map(cleanCell));
+        if (rows.length < 2 || !rows[1].every(c => /^:?-{2,}:?$/.test(c.replace(/\s+/g, ''))))
+            return [];
+        const headers = rows[0];
+        const ti = columnIndex(headers, ['paper', '论文', 'title', '标题']);
+        const tzi = columnIndex(headers, ['中文标题', 'title zh', 'translated title']);
+        const si = columnIndex(headers, ['score', '推荐', '推荐度', 'ai score', 'importance']);
+        const ri = columnIndex(headers, ['reason', '为什么值得读', '推荐理由', 'why']);
+        const tagi = columnIndex(headers, ['tags', '方向', 'topic', '主题']);
+        const ui = columnIndex(headers, ['source', 'url', 'link', '来源']);
+        const ai = columnIndex(headers, ['authors', '作者']);
+        const out = [];
+        for (const cells of rows.slice(2)) {
+            if (!cells.some(Boolean))
+                continue;
+            const rowText = cells.join(' ');
+            const urls = rowText.match(/https?:\/\/[^\s)\]}>,|]+/gi) || [];
+            const scoreText = si >= 0 ? cells[si] || '' : '';
+            const score = Number((scoreText.match(/\d{1,3}/) || [])[0] || 0);
+            const c = {
+                title: ti >= 0 ? cells[ti] : guessTitleFromText(rowText),
+                titleZh: tzi >= 0 ? cells[tzi] : '',
+                authors: ai >= 0 ? cells[ai] : undefined,
+                score,
+                reason: ri >= 0 ? cells[ri] : '',
+                tags: tagi >= 0 ? cells[tagi] : '',
+                url: ui >= 0 ? extractUrl(cells[ui]) : (urls[0] || ''),
+                urls
+            };
+            if (c.title || c.url || urls.length)
+                out.push(c);
+        }
+        return out;
+    }
+    function extractUrl(s) {
+        const m = String(s || '').match(/https?:\/\/[^\s)\]}>,|]+/i);
+        return m ? m[0] : '';
+    }
+    function guessTitleFromText(text) {
+        const lines = String(text || '').split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+        for (let line of lines) {
+            line = line.replace(/^\s*(?:[-*•]|\d+[.)])\s*/, '').trim().replace(/^#{1,6}\s*/, '').replace(/^\*\*(.*?)\*\*$/, '$1');
+            if (!line || /^https?:\/\//i.test(line))
+                continue;
+            if (/^(score|reason|tags?|方向|推荐|为什么|source|url|link|doi|arxiv)\s*[:：]/i.test(line))
+                continue;
+            const link = line.match(/^\[([^\]]+)\]\(https?:\/\/[^)]+\)$/);
+            if (link)
+                line = link[1];
+            if (line.length >= 4)
+                return line.slice(0, 300);
+        }
+        return '';
+    }
+    function parseBlock(block) {
+        const urls = block.match(/https?:\/\/[^\s)\]}>,|]+/gi) || [];
+        const lines = block.split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+        const title = guessTitleFromText(block);
+        const scoreMatch = block.match(/(?:score|ai\s*score|推荐(?:度|分)?|importance)\s*[:：]?\s*(\d{1,3})/i);
+        const reasonMatch = block.match(/(?:reason|为什么值得读|推荐理由|why)\s*[:：]\s*([^\n]+)/i);
+        const tagsMatch = block.match(/(?:tags?|方向|主题|topic)\s*[:：]\s*([^\n]+)/i);
+        const titleZhMatch = block.match(/(?:中文标题|译名|title\s*zh)\s*[:：]\s*([^\n]+)/i);
+        const authorsMatch = block.match(/(?:authors?|作者)\s*[:：]\s*([^\n]+)/i);
+        const idProbe = parseIdentifiers(block);
+        if (!title && !urls.length && !Object.keys(idProbe.identifiers).length)
+            return null;
+        return {
+            title,
+            titleZh: titleZhMatch?.[1]?.trim() || '',
+            authors: authorsMatch?.[1]?.trim() || undefined,
+            score: scoreMatch ? Number(scoreMatch[1]) : 0,
+            reason: reasonMatch?.[1]?.trim() || '',
+            tags: tagsMatch?.[1]?.trim() || '',
+            url: urls[0] || idProbe.url || '',
+            urls
+        };
+    }
+    function parseJson(text) {
+        const trimmed = text.trim();
+        if (!(trimmed.startsWith('{') || trimmed.startsWith('[')))
+            return null;
+        try {
+            const obj = JSON.parse(trimmed);
+            const arr = Array.isArray(obj) ? obj : Array.isArray(obj.papers) ? obj.papers : [obj];
+            return arr.map((x) => ({
+                ...x,
+                score: x.score ?? x.aiScore ?? x.importance ?? 0,
+                reason: x.reason ?? x.gptReason ?? x.why ?? '',
+                url: x.url ?? x.sourceUrl ?? x.link ?? '',
+                urls: x.urls ?? (x.url || x.sourceUrl || x.link ? [x.url || x.sourceUrl || x.link] : [])
+            }));
+        }
+        catch {
+            return null;
+        }
+    }
+    function parseImportText(text) {
+        const raw = String(text || '').trim();
+        if (!raw)
+            return [];
+        const json = parseJson(raw);
+        if (json)
+            return dedupeCandidates(json);
+        const table = parseMarkdownTable(raw);
+        if (table.length)
+            return dedupeCandidates(table);
+        const numberedBlocks = raw
+            .split(/\n(?=\s*(?:\d+[.)]|[-*•])\s+)/)
+            .map(x => x.trim())
+            .filter(Boolean);
+        const blocks = numberedBlocks.length > 1 ? numberedBlocks : raw.split(/\n\s*\n+/).map(x => x.trim()).filter(Boolean);
+        let parsed = blocks.map(parseBlock).filter(Boolean);
+        if (parsed.length <= 1) {
+            const urls = raw.match(/https?:\/\/[^\s)\]}>,|]+/gi) || [];
+            if (urls.length > 1) {
+                parsed = urls.map(url => ({ url, urls: [url] }));
+            }
+        }
+        if (!parsed.length) {
+            const id = parseIdentifiers(raw);
+            if (id.url || Object.keys(id.identifiers).length)
+                parsed = [{ url: id.url || raw, urls: id.url ? [id.url] : [] }];
+        }
+        return dedupeCandidates(parsed);
+    }
+    PaperShelfCore.parseImportText = parseImportText;
+    function dedupeCandidates(items) {
+        const out = [];
+        for (const item of items) {
+            const p = paperFromCandidate(item);
+            const idx = out.findIndex(x => samePaper(paperFromCandidate(x), p));
+            if (idx < 0)
+                out.push(item);
+            else {
+                const a = out[idx];
+                out[idx] = {
+                    ...a,
+                    title: a.title || item.title,
+                    titleZh: a.titleZh || item.titleZh,
+                    authors: a.authors || item.authors,
+                    score: Math.max(Number(a.score || a.aiScore || 0), Number(item.score || item.aiScore || 0)),
+                    reason: item.reason || item.gptReason || a.reason || a.gptReason,
+                    tags: unique([...(parseTags(a.tags)), ...(parseTags(item.tags))]),
+                    urls: unique([...(a.urls || (a.url ? [a.url] : [])), ...(item.urls || (item.url ? [item.url] : []))]),
+                    url: a.url || item.url
+                };
+            }
+        }
+        return out;
+    }
+    function paperSourceLabel(p) {
+        const ids = p.identifiers || {};
+        if (ids.arxiv)
+            return `arXiv:${ids.arxiv}`;
+        if (ids.doi)
+            return `DOI:${ids.doi}`;
+        if (ids.openreview)
+            return 'OpenReview';
+        if (ids.s2)
+            return 'Semantic Scholar';
+        if (p.sourceUrl)
+            return safeHost(p.sourceUrl);
+        return 'Reference';
+    }
+    PaperShelfCore.paperSourceLabel = paperSourceLabel;
+    function isToday(iso) {
+        if (!iso)
+            return false;
+        const d = new Date(iso);
+        const n = new Date();
+        return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
+    }
+    PaperShelfCore.isToday = isToday;
+    function dateKey(iso) {
+        const d = iso ? new Date(iso) : new Date();
+        if (Number.isNaN(+d))
+            return '';
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+    }
+    PaperShelfCore.dateKey = dateKey;
+})(PaperShelfCore || (PaperShelfCore = {}));
+var PaperShelfDB;
+(function (PaperShelfDB) {
+    const DB_NAME = 'papershelf-db';
+    const DB_VERSION = 1;
+    const STORE = 'papers';
+    const FALLBACK_KEY = 'papershelf-papers-fallback-v1';
+    let db = null;
+    let fallback = false;
+    async function init() {
+        if (!('indexedDB' in window)) {
+            fallback = true;
+            return;
+        }
+        try {
+            db = await new Promise((resolve, reject) => {
+                const req = indexedDB.open(DB_NAME, DB_VERSION);
+                req.onupgradeneeded = () => {
+                    const d = req.result;
+                    if (!d.objectStoreNames.contains(STORE)) {
+                        const store = d.createObjectStore(STORE, { keyPath: 'id' });
+                        store.createIndex('canonicalKey', 'canonicalKey', { unique: false });
+                        store.createIndex('bucket', 'bucket', { unique: false });
+                        store.createIndex('addedAt', 'addedAt', { unique: false });
+                    }
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror = () => reject(req.error);
+            });
+        }
+        catch {
+            fallback = true;
+            db = null;
+        }
+    }
+    PaperShelfDB.init = init;
+    function txDone(tx) {
+        return new Promise((resolve, reject) => {
+            tx.oncomplete = () => resolve();
+            tx.onerror = () => reject(tx.error);
+            tx.onabort = () => reject(tx.error);
+        });
+    }
+    function readFallback() {
+        try {
+            return JSON.parse(localStorage.getItem(FALLBACK_KEY) || '[]') || [];
+        }
+        catch {
+            return [];
+        }
+    }
+    function writeFallback(items) {
+        localStorage.setItem(FALLBACK_KEY, JSON.stringify(items));
+    }
+    async function all() {
+        if (fallback || !db)
+            return readFallback();
+        return await new Promise((resolve, reject) => {
+            const tx = db.transaction(STORE, 'readonly');
+            const req = tx.objectStore(STORE).getAll();
+            req.onsuccess = () => resolve(req.result || []);
+            req.onerror = () => reject(req.error);
+        });
+    }
+    PaperShelfDB.all = all;
+    async function put(paper) {
+        if (fallback || !db) {
+            const items = readFallback();
+            const i = items.findIndex(x => x.id === paper.id);
+            if (i >= 0)
+                items[i] = paper;
+            else
+                items.push(paper);
+            writeFallback(items);
+            return;
+        }
+        const tx = db.transaction(STORE, 'readwrite');
+        tx.objectStore(STORE).put(paper);
+        await txDone(tx);
+    }
+    PaperShelfDB.put = put;
+    async function remove(id) {
+        if (fallback || !db) {
+            writeFallback(readFallback().filter(x => x.id !== id));
+            return;
+        }
+        const tx = db.transaction(STORE, 'readwrite');
+        tx.objectStore(STORE).delete(id);
+        await txDone(tx);
+    }
+    PaperShelfDB.remove = remove;
+    async function clear() {
+        if (fallback || !db) {
+            localStorage.removeItem(FALLBACK_KEY);
+            return;
+        }
+        const tx = db.transaction(STORE, 'readwrite');
+        tx.objectStore(STORE).clear();
+        await txDone(tx);
+    }
+    PaperShelfDB.clear = clear;
+    function storageMode() {
+        return fallback ? 'localStorage fallback' : 'IndexedDB';
+    }
+    PaperShelfDB.storageMode = storageMode;
+})(PaperShelfDB || (PaperShelfDB = {}));
+var PaperShelfI18N;
+(function (PaperShelfI18N) {
+    const ZH = {
+        today: '今日', inbox: '收件箱', library: '论文库', reading: '稍后阅读', starred: '收藏', collections: '分类', archive: '归档', trash: '回收站', settings: '设置', more: '更多',
+        search: '搜索论文、作者、标签、笔记…', addPapers: '添加论文', addTitle: '添加论文', addSub: '粘贴一篇论文地址，或直接粘贴 GPT 的整份推荐列表。无需整理格式。', pastePlaceholder: '粘贴 GPT 列表、Markdown 表格、论文网址、DOI、arXiv ID…', analyze: '识别', importPapers: '导入', detected: '检测到', newPapers: '新论文', duplicates: '已存在', merge: '可更新', new: '新建', duplicate: '已存在', mergeExisting: '更新已有', importDone: '新增', importUpdated: '更新', unrecognized: '没有识别到论文', cancel: '取消', save: '保存', saved: '已保存',
+        read: '阅读', openOriginal: '打开原网页', queue: '稍后读', queued: '已加入稍后读', markRead: '标记已读', markUnread: '标记未读', details: '详情', edit: '编辑', delete: '删除', restore: '恢复', archiveAction: '归档', removeForever: '永久删除',
+        emptyToday: '今天还没有论文', emptyTodaySub: '把 ChatGPT 的每日推荐列表整段粘贴进来即可。', emptyInbox: '收件箱是空的', emptyInboxSub: '新导入的论文会先进入这里。', emptyLibrary: '论文库还是空的', emptyLibrarySub: '点击“添加论文”，支持单篇地址或整段 GPT 列表。', emptyReading: '稍后阅读为空', emptyStarred: '还没有收藏', emptyArchive: '归档为空', emptyTrash: '回收站为空',
+        importance: '重要性', newest: '最新', priority: '我的优先级', titleSort: '标题', card: '卡片', list: '列表', all: '全部', unread: '未读', readingStatus: '阅读中', readDone: '已读', queueStatus: '稍后读',
+        gptReason: 'GPT 推荐理由', abstract: '摘要', abstractZh: '中文摘要', source: '来源', sources: '来源', authors: '作者', tags: '标签', notes: '我的笔记', takeaway: '我的一句话', whySaved: '为什么留下它', collectionsLabel: '分类', status: '状态', priorityLabel: '优先级', citation: '复制引用', copied: '已复制', enrich: '补充资料', enriching: '正在补充资料…', enrichDone: '资料已更新', enrichFail: '资料补充失败，论文仍已正常保存',
+        theme: '主题', language: '语言', system: '跟随系统', dark: '深色', light: '浅色', backup: '导出备份', restoreBackup: '导入备份', exportBib: '导出 BibTeX', exportCsv: '导出 CSV', reset: '清空全部数据', storage: '本地索引', storageHint: '论文正文仍在原网站；这里只保存引用、推荐、笔记和阅读状态。', confirmReset: '确定清空全部 PaperShelf 数据吗？此操作无法撤销。',
+        reader: '阅读', readerSummary: '阅读卡片', webReader: '网页正文', readerLoading: '正在尝试载入网页正文…', readerBlocked: '该来源不允许直接读取。可以尝试嵌入网页或打开原网页。', tryEmbed: '尝试嵌入', close: '关闭', notesPanel: '笔记', outline: '信息', fontSmaller: '缩小文字', fontLarger: '放大文字',
+        createCollection: '新建分类', collectionName: '分类名称', noCollection: '没有分类', papers: '篇', importedToday: '今日导入', active: '活跃', fromGpt: 'GPT 推荐', sourceFound: '已识别来源', possibleDuplicate: '疑似重复',
+        sourceArxiv: 'arXiv', sourceHF: 'Hugging Face', sourceOpenReview: 'OpenReview', sourceS2: 'Semantic Scholar', sourceDoi: 'DOI',
+        appTagline: 'AI curated · reference first · web first',
+        singleFile: '单文件 Web 应用', backupReminder: '跨浏览器或跨设备使用时，请用备份/恢复迁移论文库。'
+    };
+    const EN = {
+        today: 'Today', inbox: 'Inbox', library: 'Library', reading: 'Reading', starred: 'Starred', collections: 'Collections', archive: 'Archive', trash: 'Trash', settings: 'Settings', more: 'More',
+        search: 'Search papers, authors, tags, notes…', addPapers: 'Add Papers', addTitle: 'Add papers', addSub: 'Paste one paper URL or an entire ChatGPT recommendation list. No formatting required.', pastePlaceholder: 'Paste GPT list, Markdown table, paper URL, DOI, arXiv ID…', analyze: 'Analyze', importPapers: 'Import', detected: 'Detected', newPapers: 'new', duplicates: 'existing', merge: 'updates', new: 'New', duplicate: 'Exists', mergeExisting: 'Update', importDone: 'Added', importUpdated: 'Updated', unrecognized: 'No paper could be recognized', cancel: 'Cancel', save: 'Save', saved: 'Saved',
+        read: 'Read', openOriginal: 'Open original', queue: 'Read later', queued: 'Added to reading queue', markRead: 'Mark read', markUnread: 'Mark unread', details: 'Details', edit: 'Edit', delete: 'Delete', restore: 'Restore', archiveAction: 'Archive', removeForever: 'Delete permanently',
+        emptyToday: 'No papers today', emptyTodaySub: 'Paste the full ChatGPT daily recommendation list.', emptyInbox: 'Inbox is empty', emptyInboxSub: 'New imports appear here first.', emptyLibrary: 'Your library is empty', emptyLibrarySub: 'Use “Add Papers” for one link or a full GPT list.', emptyReading: 'Reading queue is empty', emptyStarred: 'No starred papers', emptyArchive: 'Archive is empty', emptyTrash: 'Trash is empty',
+        importance: 'Importance', newest: 'Newest', priority: 'My priority', titleSort: 'Title', card: 'Cards', list: 'List', all: 'All', unread: 'Unread', readingStatus: 'Reading', readDone: 'Read', queueStatus: 'Read later',
+        gptReason: 'GPT recommendation', abstract: 'Abstract', abstractZh: 'Chinese abstract', source: 'Source', sources: 'Sources', authors: 'Authors', tags: 'Tags', notes: 'My notes', takeaway: 'My takeaway', whySaved: 'Why I saved this', collectionsLabel: 'Collections', status: 'Status', priorityLabel: 'Priority', citation: 'Copy citation', copied: 'Copied', enrich: 'Enrich metadata', enriching: 'Enriching…', enrichDone: 'Metadata updated', enrichFail: 'Enrichment failed; the paper remains saved',
+        theme: 'Theme', language: 'Language', system: 'System', dark: 'Dark', light: 'Light', backup: 'Export backup', restoreBackup: 'Import backup', exportBib: 'Export BibTeX', exportCsv: 'Export CSV', reset: 'Reset all data', storage: 'Local index', storageHint: 'Paper content stays on the source website; PaperShelf stores references, recommendations, notes and reading state.', confirmReset: 'Delete all PaperShelf data? This cannot be undone.',
+        reader: 'Reader', readerSummary: 'Reading card', webReader: 'Web article', readerLoading: 'Trying to load the web article…', readerBlocked: 'This source cannot be read directly. Try embedding it or open the original page.', tryEmbed: 'Try embed', close: 'Close', notesPanel: 'Notes', outline: 'Info', fontSmaller: 'Smaller text', fontLarger: 'Larger text',
+        createCollection: 'New collection', collectionName: 'Collection name', noCollection: 'No collections', papers: 'papers', importedToday: 'Imported today', active: 'Active', fromGpt: 'GPT curated', sourceFound: 'Source identified', possibleDuplicate: 'Possible duplicate',
+        sourceArxiv: 'arXiv', sourceHF: 'Hugging Face', sourceOpenReview: 'OpenReview', sourceS2: 'Semantic Scholar', sourceDoi: 'DOI',
+        appTagline: 'AI curated · reference first · web first',
+        singleFile: 'Single-file web app', backupReminder: 'Use backup/restore when moving between browsers or devices.'
+    };
+    function t(lang, key) {
+        const d = lang === 'en-US' ? EN : ZH;
+        return d[key] ?? EN[key] ?? key;
+    }
+    PaperShelfI18N.t = t;
+})(PaperShelfI18N || (PaperShelfI18N = {}));
+var PaperShelfApp;
+(function (PaperShelfApp) {
+    const SETTINGS_KEY = 'papershelf-settings-v2';
+    const DEFAULT_SETTINGS = { language: 'zh-CN', theme: 'system', lastPage: 'today', view: 'card', sort: 'importance', readerFont: 17, readerWidth: 920, collections: [] };
+    const $ = (id) => document.getElementById(id);
+    const $$ = (q, root = document) => Array.from(root.querySelectorAll(q));
+    const S = {
+        papers: [], settings: { ...DEFAULT_SETTINGS }, page: 'today', q: '', importPreview: [], readerId: '', readerMode: 'summary', readerNotesOpen: false, busy: false
+    };
+    function t(key) { return PaperShelfI18N.t(S.settings.language, key); }
+    function esc(v) { const d = document.createElement('div'); d.textContent = String(v ?? ''); return d.innerHTML; }
+    function nl2br(v) { return esc(v).replace(/\n/g, '<br>'); }
+    function fmtDate(v) { if (!v)
+        return ''; const d = new Date(v); if (Number.isNaN(+d))
+        return v; return d.toLocaleDateString(S.settings.language === 'zh-CN' ? 'zh-CN' : 'en-US', { year: 'numeric', month: 'short', day: 'numeric' }); }
+    function toast(msg, ms = 2500) { const e = $('toast'); e.textContent = msg; e.classList.add('show'); clearTimeout(toast.timer); toast.timer = setTimeout(() => e.classList.remove('show'), ms); }
+    function openExternal(url) { if (!url)
+        return; window.open(url, '_blank', 'noopener,noreferrer'); }
+    function loadSettings() {
+        try {
+            S.settings = { ...DEFAULT_SETTINGS, ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || '{}') };
+        }
+        catch {
+            S.settings = { ...DEFAULT_SETTINGS };
+        }
+        S.page = S.settings.lastPage || 'today';
+    }
+    function saveSettings() { localStorage.setItem(SETTINGS_KEY, JSON.stringify(S.settings)); }
+    function resolvedTheme() {
+        if (S.settings.theme === 'dark' || S.settings.theme === 'light')
+            return S.settings.theme;
+        return matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+    }
+    function applyTheme() { document.documentElement.dataset.theme = resolvedTheme(); document.documentElement.style.setProperty('--reader-size', `${S.settings.readerFont}px`); document.documentElement.style.setProperty('--reader-width', `${S.settings.readerWidth}px`); }
+    function cycleTheme() { const a = ['system', 'dark', 'light']; S.settings.theme = a[(a.indexOf(S.settings.theme) + 1) % a.length]; saveSettings(); applyTheme(); renderChrome(); renderPage(); }
+    function toggleLanguage() { S.settings.language = S.settings.language === 'zh-CN' ? 'en-US' : 'zh-CN'; saveSettings(); renderChrome(); renderPage(); }
+    const NAV = [
+        { page: 'today', icon: '◉', key: 'today' }, { page: 'inbox', icon: '⌑', key: 'inbox' }, { page: 'library', icon: '▤', key: 'library' }, { page: 'reading', icon: '▷', key: 'reading' },
+        { page: 'starred', icon: '☆', key: 'starred' }, { page: 'collections', icon: '◇', key: 'collections' }, { page: 'archive', icon: '▣', key: 'archive' }, { page: 'trash', icon: '♲', key: 'trash' }, { page: 'settings', icon: '⚙', key: 'settings' }
+    ];
+    const MOBILE_MAIN = ['today', 'inbox', 'library', 'reading', 'starred'];
+    function navCount(page) {
+        return papersForPage(page, false).length;
+    }
+    function renderChrome() {
+        document.documentElement.lang = S.settings.language;
+        applyTheme();
+        $$('[data-i18n]').forEach(el => el.textContent = t(el.dataset.i18n || ''));
+        $('global-search').placeholder = t('search');
+        $('nav').innerHTML = NAV.map(n => `<button data-page="${n.page}" class="${S.page === n.page ? 'active' : ''}"><span class="icon">${n.icon}</span><span>${t(n.key)}</span><span class="nav-count">${navCount(n.page) || ''}</span></button>`).join('');
+        $$('#nav button').forEach(b => b.onclick = () => goPage(b.dataset.page));
+        $('mobile-nav').innerHTML = MOBILE_MAIN.map(p => { const n = NAV.find(x => x.page === p); return `<button data-page="${p}" class="${S.page === p ? 'active' : ''}"><span>${n.icon}</span>${t(n.key)}</button>`; }).join('') + `<button data-more="1"><span>•••</span>${t('more')}</button>`;
+        $$('#mobile-nav button[data-page]').forEach(b => b.onclick = () => goPage(b.dataset.page));
+        $('mobile-nav').querySelector('[data-more]').onclick = openMobileMore;
+        $('side-theme').textContent = S.settings.theme === 'system' ? '◐' : S.settings.theme === 'dark' ? '☾' : '☀';
+        $('theme-btn').textContent = $('side-theme').textContent;
+        $('side-lang').textContent = S.settings.language === 'zh-CN' ? '中 / EN' : 'EN / 中';
+        $('lang-btn').textContent = $('side-lang').textContent;
+    }
+    function openMobileMore() {
+        const root = $('mobile-more-root');
+        const pages = ['collections', 'archive', 'trash', 'settings'];
+        root.innerHTML = `<div class="mobile-more" id="mobile-more"><div class="mobile-more-card"><div class="mobile-more-grid">${pages.map(p => { const n = NAV.find(x => x.page === p); return `<button data-page="${p}"><span>${n.icon}</span>${t(n.key)}</button>`; }).join('')}<button id="mobile-theme"><span>◐</span>${t('theme')}</button><button id="mobile-lang"><span>文</span>${t('language')}</button></div></div></div>`;
+        $('mobile-more').onclick = e => { if (e.target === e.currentTarget)
+            root.innerHTML = ''; };
+        $$('#mobile-more [data-page]').forEach(b => b.onclick = () => { root.innerHTML = ''; goPage(b.dataset.page); });
+        $('mobile-theme').onclick = () => { root.innerHTML = ''; cycleTheme(); };
+        $('mobile-lang').onclick = () => { root.innerHTML = ''; toggleLanguage(); };
+    }
+    function goPage(page) { S.page = page; S.settings.lastPage = page; S.q = ''; $('global-search').value = ''; saveSettings(); renderChrome(); renderPage(); }
+    function activePaper(p) { return p.bucket !== 'trash' && p.bucket !== 'archive'; }
+    function papersForPage(page, applySearch = true) {
+        let arr = [];
+        switch (page) {
+            case 'today':
+                arr = S.papers.filter(p => activePaper(p) && PaperShelfCore.isToday(p.addedAt));
+                break;
+            case 'inbox':
+                arr = S.papers.filter(p => p.bucket === 'inbox');
+                break;
+            case 'library':
+                arr = S.papers.filter(p => p.bucket === 'library');
+                break;
+            case 'reading':
+                arr = S.papers.filter(p => activePaper(p) && ['queue', 'reading'].includes(p.readStatus));
+                break;
+            case 'starred':
+                arr = S.papers.filter(p => activePaper(p) && p.starred);
+                break;
+            case 'archive':
+                arr = S.papers.filter(p => p.bucket === 'archive');
+                break;
+            case 'trash':
+                arr = S.papers.filter(p => p.bucket === 'trash');
+                break;
+            default: arr = [];
+        }
+        if (applySearch && S.q.trim()) {
+            const qs = S.q.toLowerCase().trim().split(/\s+/);
+            arr = arr.filter(p => { const hay = [p.title, p.titleZh, p.authors.join(' '), p.abstract, p.abstractZh, p.gptReason, p.tags.join(' '), p.notes, p.takeaway, p.whySaved, p.venue].join(' ').toLowerCase(); return qs.every(q => hay.includes(q)); });
+        }
+        return sortPapers(arr);
+    }
+    function sortPapers(arr) {
+        const a = [...arr];
+        if (S.settings.sort === 'newest')
+            a.sort((x, y) => +new Date(y.publishedAt || y.addedAt) - +new Date(x.publishedAt || x.addedAt));
+        else if (S.settings.sort === 'priority')
+            a.sort((x, y) => (y.priority - x.priority) || (y.gptScore - x.gptScore));
+        else if (S.settings.sort === 'title')
+            a.sort((x, y) => (x.title || x.titleZh).localeCompare(y.title || y.titleZh));
+        else
+            a.sort((x, y) => (y.priority - x.priority) || (y.gptScore - x.gptScore) || (+new Date(y.publishedAt || y.addedAt) - +new Date(x.publishedAt || x.addedAt)));
+        return a;
+    }
+    function pageTitle(page) {
+        const subs = {
+            today: S.settings.language === 'zh-CN' ? '今天导入和推荐的论文。' : 'Papers imported and recommended today.',
+            inbox: S.settings.language === 'zh-CN' ? '新论文先进入这里；阅读、收藏或设置优先级后自动进入论文库。' : 'New papers land here first; reading, starring or prioritizing promotes them to your library.',
+            library: S.settings.language === 'zh-CN' ? '你决定长期保留的论文。' : 'Papers you chose to keep.',
+            reading: S.settings.language === 'zh-CN' ? '真正准备读或正在读的论文。' : 'Papers queued or currently being read.',
+            starred: S.settings.language === 'zh-CN' ? '你明确收藏的论文。' : 'Papers you explicitly starred.',
+            archive: S.settings.language === 'zh-CN' ? '不需要出现在日常视图，但仍保留引用和笔记。' : 'Hidden from daily views while preserving references and notes.',
+            trash: S.settings.language === 'zh-CN' ? '删除前的安全区。' : 'A safe holding area before permanent deletion.'
+        };
+        return { title: t(page), sub: subs[page] || '' };
+    }
+    function emptyCopy(page) {
+        const map = { today: ['emptyToday', 'emptyTodaySub'], inbox: ['emptyInbox', 'emptyInboxSub'], library: ['emptyLibrary', 'emptyLibrarySub'], reading: ['emptyReading', 'emptyInboxSub'], starred: ['emptyStarred', 'emptyInboxSub'], archive: ['emptyArchive', 'emptyInboxSub'], trash: ['emptyTrash', 'emptyInboxSub'] };
+        const k = map[page] || ['emptyLibrary', 'emptyLibrarySub'];
+        return { title: t(k[0]), sub: t(k[1]) };
+    }
+    function renderPage() {
+        renderChrome();
+        if (S.page === 'collections')
+            return renderCollections();
+        if (S.page === 'settings')
+            return renderSettings();
+        const info = pageTitle(S.page);
+        const arr = papersForPage(S.page);
+        const content = $('content');
+        content.innerHTML = `<div class="page-head"><div><div class="eyebrow">PaperShelf</div><h1>${esc(info.title)}</h1><p>${esc(info.sub)}</p></div><div class="head-actions"><select id="sort" class="select"><option value="importance">${t('importance')}</option><option value="newest">${t('newest')}</option><option value="priority">${t('priority')}</option><option value="title">${t('titleSort')}</option></select><div class="seg"><button id="view-card">${t('card')}</button><button id="view-list">${t('list')}</button></div></div></div><div class="summary"><strong>${arr.length}</strong> ${t('papers')} ${S.page === 'today' ? `· ${t('importedToday')}` : ''}</div><div id="paper-zone"></div>`;
+        $('sort').value = S.settings.sort;
+        $('sort').onchange = () => { S.settings.sort = $('sort').value; saveSettings(); renderPage(); };
+        $('view-card').classList.toggle('active', S.settings.view === 'card');
+        $('view-list').classList.toggle('active', S.settings.view === 'list');
+        $('view-card').onclick = () => { S.settings.view = 'card'; saveSettings(); renderPage(); };
+        $('view-list').onclick = () => { S.settings.view = 'list'; saveSettings(); renderPage(); };
+        const zone = $('paper-zone');
+        if (!arr.length) {
+            const e = emptyCopy(S.page);
+            zone.innerHTML = `<div class="empty"><strong>${esc(e.title)}</strong><p>${esc(e.sub)}</p>${['today', 'inbox', 'library'].includes(S.page) ? `<button class="btn primary" id="empty-add">＋ ${t('addPapers')}</button>` : ''}</div>`;
+            $('empty-add') && ($('empty-add').onclick = openImport);
+            return;
+        }
+        zone.className = S.settings.view === 'card' ? 'paper-grid' : 'paper-list';
+        zone.innerHTML = arr.map(renderPaperCard).join('');
+        bindPaperCards(zone);
+    }
+    function scoreBadge(p) {
+        if (!p.gptScore)
+            return '';
+        if (p.gptScore >= 92)
+            return `<span class="badge must">MUST READ</span>`;
+        if (p.gptScore >= 84)
+            return `<span class="badge gem">WORTH IT</span>`;
+        return '';
+    }
+    function statusBadge(p) {
+        if (p.readStatus === 'queue')
+            return `<span class="badge accent">${t('queueStatus')}</span>`;
+        if (p.readStatus === 'reading')
+            return `<span class="badge accent">${t('readingStatus')}</span>`;
+        if (p.readStatus === 'read')
+            return `<span class="badge">${t('readDone')}</span>`;
+        return '';
+    }
+    function renderPaperCard(p) {
+        const title = p.title || p.titleZh || PaperShelfCore.paperSourceLabel(p);
+        const meta = [p.authors.slice(0, 3).join(', '), p.year || fmtDate(p.publishedAt), p.venue, PaperShelfCore.paperSourceLabel(p)].filter(Boolean).join(' · ');
+        const score = p.gptScore ? String(p.gptScore) : '—';
+        return `<article class="paper-card" data-id="${p.id}"><div class="score ${p.gptScore ? '' : 'none'}">${score}<small>AI</small></div><div class="card-main"><div class="card-badges">${scoreBadge(p)}${statusBadge(p)}${p.starred ? '<span class="badge must">★</span>' : ''}${p.priority ? `<span class="priority-stars">${'★'.repeat(p.priority)}</span>` : ''}</div><h2 class="paper-title">${esc(title)}</h2>${p.titleZh && p.titleZh !== p.title ? `<p class="paper-title-zh">${esc(p.titleZh)}</p>` : ''}<div class="paper-meta">${esc(meta)}</div>${p.gptReason ? `<p class="paper-reason">${esc(p.gptReason)}</p>` : ''}<div class="tags">${p.tags.slice(0, 6).map(x => `<span class="tag">${esc(x)}</span>`).join('')}</div></div><div class="card-actions list-side"><button class="btn primary sm" data-action="read">${t('read')}</button><button class="btn sm" data-action="queue">${p.readStatus === 'queue' ? t('queued') : t('queue')}</button><button class="btn sm ${p.starred ? 'star' : ''}" data-action="star">${p.starred ? '★' : '☆'}</button><button class="btn sm" data-action="detail">•••</button></div></article>`;
+    }
+    function bindPaperCards(root) {
+        $$('.paper-card', root).forEach(card => {
+            const id = card.dataset.id;
+            card.querySelectorAll('[data-action]').forEach(btn => btn.onclick = async (e) => {
+                e.stopPropagation();
+                const p = findPaper(id);
+                if (!p)
+                    return;
+                const action = btn.dataset.action;
+                if (action === 'read')
+                    openReader(id);
+                else if (action === 'detail')
+                    openDetail(id);
+                else if (action === 'star') {
+                    p.starred = !p.starred;
+                    if (p.starred && p.bucket === 'inbox')
+                        p.bucket = 'library';
+                    await savePaper(p);
+                    renderPage();
+                }
+                else if (action === 'queue') {
+                    p.readStatus = p.readStatus === 'queue' ? 'unread' : 'queue';
+                    if (p.readStatus === 'queue' && p.bucket === 'inbox')
+                        p.bucket = 'library';
+                    await savePaper(p);
+                    if (p.readStatus === 'queue')
+                        toast(t('queued'));
+                    renderPage();
+                }
+            });
+            card.onclick = e => { if (e.target.closest('button'))
+                return; openDetail(id); };
+        });
+    }
+    function renderCollections() {
+        const c = $('content');
+        c.innerHTML = `<div class="page-head"><div><div class="eyebrow">PaperShelf</div><h1>${t('collections')}</h1><p>${S.settings.language === 'zh-CN' ? '按项目或主题组织论文；同一篇论文可以属于多个分类。' : 'Organize by project or topic; one paper may belong to multiple collections.'}</p></div><div class="head-actions"><button class="btn primary" id="new-collection">＋ ${t('createCollection')}</button></div></div><div class="collections-grid" id="collections-grid"></div>`;
+        $('new-collection').onclick = createCollection;
+        const grid = $('collections-grid');
+        if (!S.settings.collections.length) {
+            grid.innerHTML = `<div class="empty"><strong>${t('noCollection')}</strong><p>${S.settings.language === 'zh-CN' ? '需要时再创建，不必为了整理而整理。' : 'Create one only when it helps.'}</p></div>`;
+            return;
+        }
+        grid.innerHTML = S.settings.collections.map(name => { const count = S.papers.filter(p => activePaper(p) && p.collections.includes(name)).length; return `<div class="collection-card"><strong>${esc(name)}</strong><span>${count} ${t('papers')}</span><div class="card-actions"><button class="btn sm" data-open-col="${esc(name)}">${t('library')}</button><button class="btn sm danger" data-del-col="${esc(name)}">${t('delete')}</button></div></div>`; }).join('');
+        $$('[data-open-col]').forEach(b => b.onclick = () => openCollectionView(b.dataset.openCol));
+        $$('[data-del-col]').forEach(b => b.onclick = () => deleteCollection(b.dataset.delCol));
+    }
+    function createCollection() { const name = prompt(t('collectionName'))?.trim(); if (!name)
+        return; if (!S.settings.collections.includes(name))
+        S.settings.collections.push(name); saveSettings(); renderCollections(); }
+    async function deleteCollection(name) { if (!confirm(`${t('delete')} “${name}”?`))
+        return; S.settings.collections = S.settings.collections.filter(x => x !== name); for (const p of S.papers) {
+        if (p.collections.includes(name)) {
+            p.collections = p.collections.filter(x => x !== name);
+            await savePaper(p, false);
+        }
+    } saveSettings(); renderCollections(); }
+    function openCollectionView(name) {
+        const arr = sortPapers(S.papers.filter(p => activePaper(p) && p.collections.includes(name)));
+        const c = $('content');
+        c.innerHTML = `<div class="page-head"><div><div class="eyebrow">${t('collections')}</div><h1>${esc(name)}</h1><p>${arr.length} ${t('papers')}</p></div><div class="head-actions"><button class="btn" id="back-cols">← ${t('collections')}</button></div></div><div class="paper-grid" id="collection-papers">${arr.map(renderPaperCard).join('')}</div>`;
+        $('back-cols').onclick = renderCollections;
+        bindPaperCards($('collection-papers'));
+    }
+    function renderSettings() {
+        const c = $('content');
+        c.innerHTML = `<div class="page-head"><div><div class="eyebrow">PaperShelf</div><h1>${t('settings')}</h1><p>${t('storageHint')}</p></div></div><div class="settings-grid"><section class="setting-card"><h3>${t('theme')} / ${t('language')}</h3><div class="toolbar"><select id="set-theme" class="select"><option value="system">${t('system')}</option><option value="dark">${t('dark')}</option><option value="light">${t('light')}</option></select><select id="set-lang" class="select"><option value="zh-CN">简体中文</option><option value="en-US">English</option></select></div></section><section class="setting-card"><h3>${t('reader')}</h3><div class="toolbar"><label class="small">${S.settings.language === 'zh-CN' ? '字号' : 'Font'} <input id="set-font" type="range" min="14" max="22" value="${S.settings.readerFont}"></label><label class="small">${S.settings.language === 'zh-CN' ? '宽度' : 'Width'} <input id="set-width" type="range" min="680" max="1180" step="20" value="${S.settings.readerWidth}"></label></div></section><section class="setting-card"><h3>${t('backup')}</h3><div class="toolbar"><button class="btn primary" id="export-backup">${t('backup')}</button><button class="btn" id="restore-backup">${t('restoreBackup')}</button></div><p>${t('backupReminder')}</p></section><section class="setting-card"><h3>${S.settings.language === 'zh-CN' ? '导出引用' : 'Reference export'}</h3><div class="toolbar"><button class="btn" id="export-bib">${t('exportBib')}</button><button class="btn" id="export-csv">${t('exportCsv')}</button></div></section><section class="setting-card"><h3>${t('storage')}</h3><p>${PaperShelfDB.storageMode()} · ${S.papers.length} ${t('papers')}<br>${t('storageHint')}</p></section><section class="setting-card"><h3>${S.settings.language === 'zh-CN' ? '危险操作' : 'Danger zone'}</h3><button class="btn danger" id="reset-all">${t('reset')}</button></section></div>`;
+        $('set-theme').value = S.settings.theme;
+        $('set-lang').value = S.settings.language;
+        $('set-theme').onchange = () => { S.settings.theme = $('set-theme').value; saveSettings(); applyTheme(); };
+        $('set-lang').onchange = () => { S.settings.language = $('set-lang').value; saveSettings(); renderChrome(); renderSettings(); };
+        $('set-font').oninput = () => { S.settings.readerFont = +$('set-font').value; saveSettings(); applyTheme(); };
+        $('set-width').oninput = () => { S.settings.readerWidth = +$('set-width').value; saveSettings(); applyTheme(); };
+        $('export-backup').onclick = exportBackup;
+        $('restore-backup').onclick = () => $('backup-file').click();
+        $('export-bib').onclick = exportBibtex;
+        $('export-csv').onclick = exportCsv;
+        $('reset-all').onclick = resetAll;
+    }
+    function findPaper(id) { return S.papers.find(p => p.id === id); }
+    async function savePaper(p, refresh = true) { p.updatedAt = PaperShelfCore.nowIso(); await PaperShelfDB.put(p); const i = S.papers.findIndex(x => x.id === p.id); if (i >= 0)
+        S.papers[i] = p;
+    else
+        S.papers.push(p); if (refresh)
+        renderChrome(); }
+    async function removePaper(id) { await PaperShelfDB.remove(id); S.papers = S.papers.filter(x => x.id !== id); }
+    function openDetail(id) {
+        const p = findPaper(id);
+        if (!p)
+            return;
+        const colOptions = S.settings.collections.map(c => `<option ${p.collections.includes(c) ? 'selected' : ''}>${esc(c)}</option>`).join('');
+        const sourceRows = p.sources.length ? p.sources.map(s => `<div class="source-row"><strong>${esc(s.label)}</strong><span class="url">${esc(s.url)}</span><button class="btn sm" data-source-url="${esc(s.url)}">↗</button></div>`).join('') : `<div class="small">—</div>`;
+        $('modal-root').innerHTML = `<div class="modal-backdrop" id="detail-backdrop"><div class="modal"><div class="modal-head"><strong>${t('details')}</strong><div class="spacer"></div><button class="btn sm" id="detail-close">✕</button></div><div class="modal-body"><div class="detail-grid"><div class="detail-main"><div class="field"><label>${S.settings.language === 'zh-CN' ? '标题' : 'Title'}</label><input class="input" id="d-title" value="${esc(p.title)}"></div><div class="field"><label>${S.settings.language === 'zh-CN' ? '中文标题' : 'Chinese title'}</label><input class="input" id="d-titlezh" value="${esc(p.titleZh)}"></div><div class="field"><label>${t('gptReason')}</label><textarea class="textarea" id="d-reason">${esc(p.gptReason)}</textarea></div><div class="field"><label>${t('takeaway')}</label><textarea class="textarea" id="d-takeaway">${esc(p.takeaway)}</textarea></div><div class="field"><label>${t('notes')}</label><textarea class="textarea" id="d-notes" style="min-height:150px">${esc(p.notes)}</textarea></div><div class="field"><label>${t('whySaved')}</label><textarea class="textarea" id="d-why">${esc(p.whySaved)}</textarea></div></div><div class="detail-side"><div class="panel"><div class="panel-head"><strong>${t('source')}</strong><button class="btn sm" id="d-enrich">${t('enrich')}</button></div><div class="panel-body"><div class="source-list">${sourceRows}</div></div></div><div class="field"><label>${t('priorityLabel')}</label><select class="select" id="d-priority">${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}">${n}${n ? ' ★'.repeat(n) : ''}</option>`).join('')}</select></div><div class="field"><label>${t('status')}</label><select class="select" id="d-status"><option value="unread">${t('unread')}</option><option value="queue">${t('queueStatus')}</option><option value="reading">${t('readingStatus')}</option><option value="read">${t('readDone')}</option></select></div><div class="field"><label>${t('tags')}</label><input class="input" id="d-tags" value="${esc(p.tags.join(', '))}"></div><div class="field"><label>${t('collectionsLabel')}</label><select class="select" id="d-collection" multiple size="${Math.max(3, Math.min(6, S.settings.collections.length || 3))}">${colOptions}</select></div><div class="toolbar"><button class="btn primary" id="d-read">${t('read')}</button><button class="btn" id="d-cite">${t('citation')}</button>${p.bucket === 'archive' ? `<button class="btn" id="d-restore">${t('restore')}</button>` : `<button class="btn" id="d-archive">${t('archiveAction')}</button>`}<button class="btn danger" id="d-trash">${p.bucket === 'trash' ? t('removeForever') : t('delete')}</button></div></div></div></div><div class="modal-foot"><button class="btn" id="detail-cancel">${t('cancel')}</button><button class="btn primary" id="detail-save">${t('save')}</button></div></div></div>`;
+        $('d-priority').value = String(p.priority);
+        $('d-status').value = p.readStatus;
+        const close = () => { $('modal-root').innerHTML = ''; };
+        $('detail-close').onclick = close;
+        $('detail-cancel').onclick = close;
+        $('detail-backdrop').onclick = e => { if (e.target === e.currentTarget)
+            close(); };
+        $$('[data-source-url]').forEach(b => b.onclick = () => openExternal(b.dataset.sourceUrl));
+        $('d-read').onclick = () => { close(); openReader(p.id); };
+        $('d-cite').onclick = () => copyCitation(p);
+        $('d-enrich').onclick = () => enrichPaper(p, true);
+        $('d-archive') && ($('d-archive').onclick = async () => { p.bucket = 'archive'; await savePaper(p, false); close(); renderPage(); });
+        $('d-restore') && ($('d-restore').onclick = async () => { p.bucket = 'library'; await savePaper(p, false); close(); renderPage(); });
+        $('d-trash').onclick = async () => { if (p.bucket === 'trash') {
+            if (!confirm(t('removeForever') + '?'))
+                return;
+            await removePaper(p.id);
+        }
+        else {
+            p.bucket = 'trash';
+            await savePaper(p, false);
+        } close(); renderPage(); };
+        $('detail-save').onclick = async () => { p.title = $('d-title').value.trim(); p.titleZh = $('d-titlezh').value.trim(); p.gptReason = $('d-reason').value.trim(); p.takeaway = $('d-takeaway').value.trim(); p.notes = $('d-notes').value.trim(); p.whySaved = $('d-why').value.trim(); p.priority = +$('d-priority').value; p.readStatus = $('d-status').value; p.tags = $('d-tags').value.split(/[,，]/).map(x => x.trim()).filter(Boolean); p.collections = Array.from($('d-collection').selectedOptions).map(o => o.value); if (p.bucket === 'inbox' && (p.priority || p.readStatus !== 'unread' || p.starred || p.takeaway || p.notes || p.whySaved))
+            p.bucket = 'library'; p.canonicalKey = PaperShelfCore.canonicalKey(p.identifiers, p.title, p.authors); await savePaper(p, false); toast(t('saved')); close(); renderPage(); };
+    }
+    function copyCitation(p) { const text = `${p.authors.length ? p.authors.join(', ') + '. ' : ''}${p.title || p.titleZh}.${p.venue ? ' ' + p.venue + '.' : ''}${p.year ? ' ' + p.year + '.' : ''} ${p.identifiers.doi ? 'https://doi.org/' + p.identifiers.doi : (p.sourceUrl || p.sources[0]?.url || '')}`.trim(); navigator.clipboard?.writeText(text).then(() => toast(t('copied'))).catch(() => prompt('Copy', text)); }
+    function openImport() {
+        S.importPreview = [];
+        $('modal-root').innerHTML = `<div class="modal-backdrop" id="import-backdrop"><div class="modal"><div class="modal-head"><div><strong>${t('addTitle')}</strong><div class="small">${t('addSub')}</div></div><div class="spacer"></div><button class="btn sm" id="import-close">✕</button></div><div class="modal-body"><textarea id="import-text" class="textarea import-box" placeholder="${t('pastePlaceholder')}"></textarea><div class="import-hint">⌘ GPT Markdown · numbered list · URLs · JSON · DOI · arXiv · HF · OpenReview · Semantic Scholar</div><div class="import-summary" id="import-summary"></div><div id="import-preview"></div></div><div class="modal-foot"><button class="btn" id="import-cancel">${t('cancel')}</button><button class="btn" id="import-analyze">${t('analyze')}</button><button class="btn primary" id="import-go" disabled>${t('importPapers')}</button></div></div></div>`;
+        const close = () => { $('modal-root').innerHTML = ''; };
+        $('import-close').onclick = close;
+        $('import-cancel').onclick = close;
+        $('import-backdrop').onclick = e => { if (e.target === e.currentTarget)
+            close(); };
+        $('import-analyze').onclick = analyzeImport;
+        $('import-go').onclick = executeImport;
+        $('import-text').addEventListener('paste', () => setTimeout(analyzeImport, 35));
+        $('import-text').addEventListener('input', debounce(() => { if ($('import-text').value.trim().length > 12)
+            analyzeImport(); }, 400));
+        $('import-text').addEventListener('keydown', e => { if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+            e.preventDefault();
+            analyzeImport();
+            setTimeout(() => { if (S.importPreview.length)
+                executeImport(); }, 20);
+        } });
+        $('import-text').focus();
+    }
+    function analyzeImport() {
+        const text = $('import-text').value;
+        const arr = PaperShelfCore.parseImportText(text);
+        S.importPreview = arr.map(candidate => { const paper = PaperShelfCore.paperFromCandidate(candidate); const existing = S.papers.find(x => PaperShelfCore.samePaper(x, paper)); let status = existing ? 'duplicate' : 'new'; if (existing) {
+            const meaningful = (paper.gptScore > existing.gptScore) || (paper.gptReason && paper.gptReason !== existing.gptReason) || paper.tags.some(x => !existing.tags.includes(x)) || paper.sources.some(s => !existing.sources.some(es => es.url === s.url));
+            if (meaningful)
+                status = 'merge';
+        } return { candidate, paper, existing, status }; });
+        const n = S.importPreview.filter(x => x.status === 'new').length, d = S.importPreview.filter(x => x.status === 'duplicate').length, m = S.importPreview.filter(x => x.status === 'merge').length;
+        $('import-summary').innerHTML = `<span class="badge">${t('detected')} ${S.importPreview.length}</span><span class="badge gem">${n} ${t('newPapers')}</span><span class="badge">${d} ${t('duplicates')}</span><span class="badge must">${m} ${t('merge')}</span>`;
+        const box = $('import-preview');
+        box.className = S.importPreview.length ? 'import-preview' : '';
+        box.innerHTML = S.importPreview.map(x => `<div class="preview-row"><div class="${x.status === 'new' ? 'status-new' : x.status === 'merge' ? 'status-merge' : 'status-dup'}">${t(x.status === 'new' ? 'new' : x.status === 'merge' ? 'mergeExisting' : 'duplicate')}</div><div><strong>${esc(x.paper.title || x.paper.titleZh || x.paper.sourceUrl || x.paper.canonicalKey)}</strong><div class="small">${esc(PaperShelfCore.paperSourceLabel(x.paper))}${x.paper.gptScore ? ' · AI ' + x.paper.gptScore : ''}</div></div><div class="small">${esc(x.paper.canonicalKey)}</div></div>`).join('') || `<div class="empty" style="padding:28px"><strong>${t('unrecognized')}</strong></div>`;
+        $('import-go').disabled = !S.importPreview.length;
+    }
+    async function executeImport() {
+        if (S.busy || !S.importPreview.length)
+            return;
+        S.busy = true;
+        $('import-go').disabled = true;
+        let add = 0, upd = 0;
+        const touched = [];
+        try {
+            for (const x of S.importPreview) {
+                if (x.existing) {
+                    const merged = PaperShelfCore.mergePaper(x.existing, x.paper);
+                    await savePaper(merged, false);
+                    touched.push(merged);
+                    upd++;
+                }
+                else {
+                    await savePaper(x.paper, false);
+                    touched.push(x.paper);
+                    add++;
+                }
+            }
+            toast(`${t('importDone')}: ${add} · ${t('importUpdated')}: ${upd}`, 3300);
+            $('modal-root').innerHTML = '';
+            S.page = 'today';
+            S.settings.lastPage = 'today';
+            saveSettings();
+            renderPage();
+            for (const p of touched)
+                enrichPaper(p, false);
+        }
+        finally {
+            S.busy = false;
+        }
+    }
+    async function enrichPaper(p, announce = false) {
+        if (announce)
+            toast(t('enriching'));
+        p.enrichmentStatus = 'running';
+        await savePaper(p, false);
+        try {
+            let data = null;
+            let lookup = '';
+            if (p.identifiers.arxiv)
+                lookup = 'ARXIV:' + p.identifiers.arxiv;
+            else if (p.identifiers.doi)
+                lookup = 'DOI:' + p.identifiers.doi;
+            else if (p.identifiers.s2)
+                lookup = p.identifiers.s2;
+            if (lookup) {
+                const r = await fetch(`https://api.semanticscholar.org/graph/v1/paper/${encodeURIComponent(lookup)}?fields=title,abstract,authors,year,venue,url,externalIds,publicationDate,citationCount`, { headers: { Accept: 'application/json' } });
+                if (r.ok)
+                    data = await r.json();
+            }
+            else if (p.title) {
+                const r = await fetch(`https://api.semanticscholar.org/graph/v1/paper/search?query=${encodeURIComponent(p.title)}&limit=1&fields=title,abstract,authors,year,venue,url,externalIds,publicationDate,citationCount`, { headers: { Accept: 'application/json' } });
+                if (r.ok)
+                    data = (await r.json()).data?.[0] || null;
+            }
+            if (!data)
+                throw new Error('metadata unavailable');
+            p.title = p.title || data.title || '';
+            p.abstract = p.abstract || data.abstract || '';
+            p.authors = p.authors.length ? p.authors : (data.authors || []).map((a) => a.name).filter(Boolean);
+            p.year = p.year || String(data.year || '');
+            p.venue = p.venue || data.venue || '';
+            p.publishedAt = p.publishedAt || data.publicationDate || '';
+            p.citationCount = data.citationCount ?? p.citationCount;
+            const ext = data.externalIds || {};
+            if (ext.ArXiv)
+                p.identifiers.arxiv = PaperShelfCore.normalizeArxiv(ext.ArXiv);
+            if (ext.DOI)
+                p.identifiers.doi = PaperShelfCore.normalizeDoi(ext.DOI);
+            p.canonicalKey = PaperShelfCore.canonicalKey(p.identifiers, p.title, p.authors);
+            p.readerUrl = p.readerUrl || PaperShelfCore.deriveReaderUrl(p.identifiers, p.sourceUrl);
+            if (data.url)
+                p.sources = PaperShelfCore.mergeSources(p.sources, [{ type: 'semantic-scholar', label: 'Semantic Scholar', url: data.url }]);
+            p.enrichmentStatus = 'done';
+            const duplicate = S.papers.find(x => x.id !== p.id && PaperShelfCore.samePaper(x, p));
+            if (duplicate) {
+                const merged = PaperShelfCore.mergePaper(duplicate, p);
+                await savePaper(merged, false);
+                await removePaper(p.id);
+                p = merged;
+            }
+            else
+                await savePaper(p, false);
+            if (announce) {
+                toast(t('enrichDone'));
+                $('modal-root').innerHTML = '';
+                openDetail(p.id);
+            }
+            renderPage();
+        }
+        catch {
+            p.enrichmentStatus = 'failed';
+            await savePaper(p, false);
+            if (announce)
+                toast(t('enrichFail'), 3300);
+        }
+    }
+    function openReader(id) {
+        const p = findPaper(id);
+        if (!p)
+            return;
+        S.readerId = id;
+        S.readerMode = 'summary';
+        S.readerNotesOpen = false;
+        p.lastOpenedAt = PaperShelfCore.nowIso();
+        if (p.readStatus === 'unread')
+            p.readStatus = 'reading';
+        if (p.bucket === 'inbox')
+            p.bucket = 'library';
+        savePaper(p, false);
+        renderReader();
+        renderPage();
+    }
+    function renderReader() {
+        const p = findPaper(S.readerId);
+        if (!p) {
+            $('reader-root').innerHTML = '';
+            return;
+        }
+        const meta = [p.authors.join(', '), p.year || fmtDate(p.publishedAt), p.venue, PaperShelfCore.paperSourceLabel(p)].filter(Boolean).join(' · ');
+        $('reader-root').innerHTML = `<div class="reader"><header class="reader-head"><button class="btn icon" id="reader-close">←</button><div class="reader-title"><strong>${esc(p.title || p.titleZh || PaperShelfCore.paperSourceLabel(p))}</strong><span>${esc(meta)}</span></div><div class="reader-actions"><button class="btn sm ${S.readerMode === 'summary' ? 'primary' : ''}" id="reader-summary">${t('readerSummary')}</button><button class="btn sm ${S.readerMode === 'web' ? 'primary' : ''}" id="reader-web">${t('webReader')}</button><button class="btn sm" id="reader-original">↗ ${t('openOriginal')}</button><button class="btn sm" id="reader-note-toggle">✎ ${t('notesPanel')}</button><button class="btn sm" id="font-minus">A−</button><button class="btn sm" id="font-plus">A＋</button></div></header><div class="reader-body ${S.readerNotesOpen ? '' : 'no-aside'}"><main class="reader-main" id="reader-main"></main><aside class="reader-aside ${S.readerNotesOpen ? '' : 'hidden'}" id="reader-aside"><h3>${t('notes')}</h3><textarea class="textarea" id="reader-notes" placeholder="${t('notes')}">${esc(p.notes)}</textarea><h3 style="margin-top:14px">${t('takeaway')}</h3><textarea class="textarea" id="reader-takeaway" style="min-height:90px">${esc(p.takeaway)}</textarea><div class="toolbar" style="margin-top:10px"><select id="reader-status" class="select"><option value="reading">${t('readingStatus')}</option><option value="queue">${t('queueStatus')}</option><option value="read">${t('readDone')}</option><option value="unread">${t('unread')}</option></select><select id="reader-priority" class="select">${[0, 1, 2, 3, 4, 5].map(n => `<option value="${n}">${t('priority')} ${n}</option>`).join('')}</select></div></aside></div></div>`;
+        $('reader-close').onclick = closeReader;
+        $('reader-summary').onclick = () => { S.readerMode = 'summary'; renderReader(); };
+        $('reader-web').onclick = () => { S.readerMode = 'web'; renderReader(); loadWebReader(p); };
+        $('reader-original').onclick = () => openExternal(p.readerUrl || p.sourceUrl || p.sources[0]?.url || '');
+        $('reader-note-toggle').onclick = () => { S.readerNotesOpen = !S.readerNotesOpen; renderReader(); };
+        $('font-minus').onclick = () => { S.settings.readerFont = Math.max(14, S.settings.readerFont - 1); saveSettings(); applyTheme(); };
+        $('font-plus').onclick = () => { S.settings.readerFont = Math.min(22, S.settings.readerFont + 1); saveSettings(); applyTheme(); };
+        if (S.readerNotesOpen) {
+            $('reader-status').value = p.readStatus;
+            $('reader-priority').value = String(p.priority);
+            const saveNotes = debounce(async () => { p.notes = $('reader-notes').value; p.takeaway = $('reader-takeaway').value; p.readStatus = $('reader-status').value; p.priority = +$('reader-priority').value; await savePaper(p, false); }, 500);
+            $('reader-notes').oninput = saveNotes;
+            $('reader-takeaway').oninput = saveNotes;
+            $('reader-status').onchange = saveNotes;
+            $('reader-priority').onchange = saveNotes;
+        }
+        if (S.readerMode === 'summary')
+            renderReaderSummary(p);
+        else
+            loadWebReader(p);
+    }
+    function renderReaderSummary(p) {
+        const main = $('reader-main');
+        const title = p.title || p.titleZh || PaperShelfCore.paperSourceLabel(p);
+        main.innerHTML = `<article class="reader-card"><h1>${esc(title)}</h1>${p.titleZh && p.titleZh !== p.title ? `<div class="zh-title">${esc(p.titleZh)}</div>` : ''}<div class="meta">${esc([p.authors.join(', '), p.year || fmtDate(p.publishedAt), p.venue, PaperShelfCore.paperSourceLabel(p)].filter(Boolean).join(' · '))}</div>${p.gptReason ? `<section class="reader-section"><h2>${t('gptReason')}</h2><p class="reader-reason">${nl2br(p.gptReason)}</p></section>` : ''}${p.abstractZh ? `<section class="reader-section"><h2>${t('abstractZh')}</h2><p>${nl2br(p.abstractZh)}</p></section>` : ''}${p.abstract ? `<section class="reader-section"><h2>${t('abstract')}</h2><p>${nl2br(p.abstract)}</p></section>` : ''}${p.takeaway ? `<section class="reader-section"><h2>${t('takeaway')}</h2><p>${nl2br(p.takeaway)}</p></section>` : ''}<section class="reader-section"><h2>${t('source')}</h2><div class="toolbar"><button class="btn primary" id="summary-web">${t('webReader')}</button><button class="btn" id="summary-original">↗ ${t('openOriginal')}</button></div></section></article>`;
+        $('summary-web').onclick = () => { S.readerMode = 'web'; renderReader(); };
+        $('summary-original').onclick = () => openExternal(p.readerUrl || p.sourceUrl || p.sources[0]?.url || '');
+        bindReaderProgress(p);
+    }
+    async function loadWebReader(p) {
+        const main = $('reader-main');
+        const url = p.readerUrl || p.sourceUrl || p.sources[0]?.url || '';
+        if (!url) {
+            main.innerHTML = `<div class="reader-fallback"><strong>${t('readerBlocked')}</strong></div>`;
+            return;
+        }
+        main.innerHTML = `<div class="reader-loading">${t('readerLoading')}</div>`;
+        try {
+            const r = await fetch(url, { mode: 'cors', credentials: 'omit' });
+            if (!r.ok)
+                throw new Error(String(r.status));
+            const html = await r.text();
+            const clean = extractReadableHtml(html, url);
+            if (!clean)
+                throw new Error('empty');
+            main.innerHTML = `<article class="web-article">${clean}</article>`;
+            bindReaderProgress(p);
+        }
+        catch {
+            main.innerHTML = `<div class="reader-fallback"><strong>${t('readerBlocked')}</strong><p>${esc(url)}</p><div class="toolbar" style="justify-content:center"><button class="btn" id="reader-embed-btn">${t('tryEmbed')}</button><button class="btn primary" id="reader-open-btn">↗ ${t('openOriginal')}</button></div></div>`;
+            $('reader-open-btn').onclick = () => openExternal(url);
+            $('reader-embed-btn').onclick = () => { S.readerMode = 'embed'; main.innerHTML = `<iframe class="reader-embed" src="${esc(url)}" referrerpolicy="no-referrer"></iframe>`; };
+        }
+    }
+    function extractReadableHtml(html, base) {
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+        doc.querySelectorAll('script,style,noscript,iframe,object,embed,nav,header,footer,form,button').forEach(e => e.remove());
+        const root = doc.querySelector('main,.ltx_page_main,article,.paper,body');
+        if (!root)
+            return '';
+        root.querySelectorAll('*').forEach(el => { Array.from(el.attributes).forEach(a => { if (/^on/i.test(a.name) || a.name === 'srcdoc')
+            el.removeAttribute(a.name); }); for (const attr of ['href', 'src']) {
+            const v = el.getAttribute(attr);
+            if (v) {
+                if (/^javascript:/i.test(v)) {
+                    el.removeAttribute(attr);
+                }
+                else if (!/^(data:|mailto:|#)/i.test(v)) {
+                    try {
+                        el.setAttribute(attr, new URL(v, base).href);
+                    }
+                    catch { }
+                }
+            }
+        } });
+        return root.innerHTML;
+    }
+    function bindReaderProgress(p) { const main = $('reader-main'); const save = debounce(async () => { const max = main.scrollHeight - main.clientHeight; p.readProgress = max > 0 ? Math.max(0, Math.min(100, Math.round(main.scrollTop / max * 100))) : 0; await savePaper(p, false); }, 600); main.addEventListener('scroll', save); restoreReaderProgress(p); }
+    function restoreReaderProgress(p) { const main = $('reader-main'); requestAnimationFrame(() => { const max = main.scrollHeight - main.clientHeight; if (max > 0 && p.readProgress)
+        main.scrollTop = max * p.readProgress / 100; }); }
+    function closeReader() { const p = findPaper(S.readerId); if (p)
+        savePaper(p, false); S.readerId = ''; $('reader-root').innerHTML = ''; renderPage(); }
+    function exportBackup() { downloadText(`PaperShelf_Backup_${PaperShelfCore.dateKey()}.json`, JSON.stringify({ schema: 2, exportedAt: PaperShelfCore.nowIso(), settings: S.settings, papers: S.papers }, null, 2), 'application/json'); }
+    async function importBackupFile(e) { const f = e.target.files?.[0]; if (!f)
+        return; try {
+        const j = JSON.parse(await f.text());
+        const arr = Array.isArray(j) ? j : (j.papers || []);
+        if (j.settings)
+            S.settings = { ...S.settings, ...j.settings };
+        for (const raw of arr) {
+            const p = { ...PaperShelfCore.paperFromCandidate({ url: raw.sourceUrl || '', title: raw.title || '' }), ...raw, id: raw.id || PaperShelfCore.uid() };
+            const ex = S.papers.find(x => PaperShelfCore.samePaper(x, p));
+            await savePaper(ex ? PaperShelfCore.mergePaper(ex, p) : p, false);
+        }
+        saveSettings();
+        toast(`${t('importDone')}: ${arr.length}`);
+        renderPage();
+    }
+    catch {
+        toast('Invalid backup');
+    }
+    finally {
+        e.target.value = '';
+    } }
+    function exportBibtex() { const active = S.papers.filter(activePaper); const text = active.map((p, i) => { const key = (p.authors[0]?.split(' ').pop() || 'paper') + (p.year || '') + (i + 1); return `@article{${key},\n  title={${p.title || p.titleZh}},\n  author={${p.authors.join(' and ')}},\n  year={${p.year || ''}},\n  journal={${p.venue || ''}},\n  doi={${p.identifiers.doi || ''}},\n  url={${p.sourceUrl || p.sources[0]?.url || ''}}\n}`; }).join('\n\n'); downloadText('PaperShelf.bib', text, 'text/plain'); }
+    function exportCsv() { const rows = [['title', 'title_zh', 'authors', 'year', 'venue', 'score', 'priority', 'status', 'tags', 'url'], ...S.papers.filter(activePaper).map(p => [p.title, p.titleZh, p.authors.join('; '), p.year, p.venue, String(p.gptScore), String(p.priority), p.readStatus, p.tags.join('; '), p.sourceUrl || p.sources[0]?.url || ''])]; const text = rows.map(r => r.map(csvCell).join(',')).join('\n'); downloadText('PaperShelf.csv', text, 'text/csv;charset=utf-8'); }
+    function csvCell(v) { return `"${String(v || '').replace(/"/g, '""')}"`; }
+    function downloadText(name, text, type) { const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([text], { type })); a.download = name; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000); }
+    async function resetAll() { if (!confirm(t('confirmReset')))
+        return; await PaperShelfDB.clear(); S.papers = []; S.settings = { ...DEFAULT_SETTINGS }; S.page = 'today'; saveSettings(); renderChrome(); renderPage(); }
+    function debounce(fn, ms = 250) { let timer; return (...args) => { clearTimeout(timer); timer = setTimeout(() => fn(...args), ms); }; }
+    function bindTop() {
+        $('add-papers').onclick = openImport;
+        $('theme-btn').onclick = cycleTheme;
+        $('side-theme').onclick = cycleTheme;
+        $('lang-btn').onclick = toggleLanguage;
+        $('side-lang').onclick = toggleLanguage;
+        $('global-search').oninput = e => { S.q = e.target.value; renderPage(); };
+        $('global-search').onkeydown = e => { if (e.key === 'Enter') {
+            const v = e.currentTarget.value.trim();
+            const ids = PaperShelfCore.parseIdentifiers(v);
+            if (v && (ids.url || Object.keys(ids.identifiers).length)) {
+                openImport();
+                setTimeout(() => { $('import-text').value = v; analyzeImport(); }, 0);
+            }
+        } };
+        $('backup-file').onchange = importBackupFile;
+    }
+    async function init() {
+        loadSettings();
+        applyTheme();
+        await PaperShelfDB.init();
+        S.papers = await PaperShelfDB.all();
+        bindTop();
+        renderChrome();
+        renderPage();
+        matchMedia('(prefers-color-scheme: light)').addEventListener?.('change', () => { if (S.settings.theme === 'system') {
+            applyTheme();
+            renderChrome();
+        } });
+        window.__PaperShelf = { parseImportText: PaperShelfCore.parseImportText, parseIdentifiers: PaperShelfCore.parseIdentifiers, canonicalKey: PaperShelfCore.canonicalKey, samePaper: PaperShelfCore.samePaper, paperFromCandidate: PaperShelfCore.paperFromCandidate };
+    }
+    PaperShelfApp.init = init;
+})(PaperShelfApp || (PaperShelfApp = {}));
+window.addEventListener('DOMContentLoaded', () => PaperShelfApp.init().catch(err => { console.error(err); document.body.innerHTML = '<pre style="padding:24px">PaperShelf failed to initialize.\n' + String(err) + '</pre>'; }));
+</script>
+</body>
+</html>
